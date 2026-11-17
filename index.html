@@ -1532,6 +1532,32 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   .side-cell{align-self:stretch;min-width:0;clip-path:inset(-8px -24px 0 -24px)}
   .side-cell>.side{position:fixed!important;top:var(--side-top,calc(var(--head) + var(--cbar-h,57px) + 16px))!important;width:256px;transition:none}
 }
+
+/* ---------- footer credit ---------- */
+.footer .ft-credit{display:flex!important;flex-wrap:wrap;justify-content:flex-start!important;align-items:center;gap:0 8px;margin:0;padding:2px 0 8px;border-top:1px solid var(--hair);font-size:var(--fs-cap,12px);color:var(--muted)}
+.footer .ft-credit a{color:var(--deep);font-size:inherit;min-height:32px!important;display:inline-flex;align-items:center}
+@media (pointer:coarse){.footer .ft-credit a{min-height:44px!important}}
+.footer .ft-credit a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- category icons (Lucide, the same set as the rest of the interface) ---------- */
+.c-ic{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.cat{grid-template-columns:20px minmax(0,1fr) auto!important;column-gap:12px!important}
+.cat>.c-ic{grid-column:1;grid-row:1 / span 2;align-self:center;color:var(--muted)}
+.cat>b{grid-column:2;grid-row:1}.cat>em{grid-column:2;grid-row:2}.cat>i{grid-column:3;grid-row:1 / span 2!important}
+.cat[aria-pressed="true"]:not(.psel)>.c-ic{color:var(--on-fill)}
+.cat.psel>.c-ic,.cat[aria-expanded="true"]>.c-ic{color:var(--deep)}
+.cat.zero>.c-ic{color:var(--dim)}
+.subs{padding-inline-start:32px}
+.g-cat>.c-ic{width:16px;height:16px;margin-inline-end:8px;vertical-align:-3px;display:inline-block}
+
+/* ---------- desktop: the backdrop alone dims the page. The header is not painted dim as well (that is only for phone browser bars), so the header and the page dim equally ---------- */
+@media (min-width:720px){
+  html.ov-lock #chromeGlass{background:var(--glass)!important;-webkit-backdrop-filter:saturate(1.8) blur(20px)!important;backdrop-filter:saturate(1.8) blur(20px)!important}
+  html.ov-lock #header{background-color:transparent!important}
+  html.ov-lock #header>*,html[data-theme="dark"].ov-lock #header>*{opacity:1!important}
+  html.ov-lock{background-color:var(--page)!important}
+  #topTint,#botTint{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -1621,6 +1647,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
       <p>Distribution arm of Basamh Trading &amp; Industrial Group · Jeddah, Saudi Arabia <span lang="ar">المتخصصة لخدمات الأطعمة</span></p>
       <a class="ft-link" href="https://sfs.com.sa" target="_blank" rel="noopener">sfs.com.sa</a>
     </div>
+    <p class="ft-credit">Designed and published by Ayman Tarabeh <span aria-hidden="true">·</span> <a href="mailto:ayman.tarabeh@gmail.com">ayman.tarabeh@gmail.com</a> <span aria-hidden="true">·</span> <a href="tel:+966555022344" dir="ltr">+966 55 502 2344</a></p>
   </div>
 </footer>
 
@@ -1683,6 +1710,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   function ar(tag,txt,cls){return '<'+tag+(cls?' class="'+cls+'"':'')+' lang="ar" dir="rtl">'+esc(txt)+'</'+tag+'>'}
   function norm(t){return String(t||'').toLowerCase().replace(/[ً-ْـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^a-z0-9؀-ۿ]+/g,' ').trim()}
   function mailto(subject){return 'mailto:'+EMAIL+'?subject='+encodeURIComponent(subject)}
+  var CICON={"all": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\" /> <rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\" />", "bakery": "<path d=\"M10.2 18H4.774a1.5 1.5 0 0 1-1.352-.97 11 11 0 0 1 .132-6.487\" /> <path d=\"M18 10.2V4.774a1.5 1.5 0 0 0-.97-1.352 11 11 0 0 0-6.486.132\" /> <path d=\"M18 5a4 3 0 0 1 4 3 2 2 0 0 1-2 2 10 10 0 0 0-5.139 1.42\" /> <path d=\"M5 18a3 4 0 0 0 3 4 2 2 0 0 0 2-2 10 10 0 0 1 1.42-5.14\" /> <path d=\"M8.709 2.554a10 10 0 0 0-6.155 6.155 1.5 1.5 0 0 0 .676 1.626l9.807 5.42a2 2 0 0 0 2.718-2.718l-5.42-9.807a1.5 1.5 0 0 0-1.626-.676\" />", "beverages": "<path d=\"m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8\" /> <path d=\"M5 8h14\" /> <path d=\"M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0\" /> <path d=\"m12 8 1-6h2\" />", "canned": "<path d=\"M15 16a1 1 0 0 0-7-7q-4 4-5.987 12.385a.5.5 0 0 0 .602.602Q11 20 15 16l-3-3\" /> <path d=\"M15 9q4 4 7 0-3-4-7 0 4-4 0-7-4 3 0 7\" /> <path d=\"m8 15-2.58-2.58\" />", "dairy": "<path d=\"M8 2h8\" /> <path d=\"M9 2v2.789a4 4 0 0 1-.672 2.219l-.656.984A4 4 0 0 0 7 10.212V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-9.789a4 4 0 0 0-.672-2.219l-.656-.984A4 4 0 0 1 15 4.788V2\" /> <path d=\"M7 15a6.472 6.472 0 0 1 5 0 6.47 6.47 0 0 0 5 0\" />", "dried": "<path d=\"M16.847 5.847 20 9a7.23 7.23 0 011.551 7.516C21.241 17.352 21 17.932 21 19v1a1 1 0 01-1 1h-1c-1.069 0-1.648.242-2.485.552A7.2 7.2 0 019.002 20l-3.155-3.153\" /> <path d=\"M18.21 5.43c-1.71.69-5.07 1.07-6.71 1.07.46 1.38.91 2.74.61 4.88a.88.88 0 01-.73.74c-1.78.28-3.54-.17-4.88-.62 0 1.64-.38 5-1.07 6.71-.21.52-.82.55-1.17.12A10 10 0 0118.33 4.26c.43.35.4.97-.12 1.17\" /> <path d=\"M4.93 4.93 3 3a.7.7 0 010-1\" />", "fish": "<path d=\"M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z\" /> <path d=\"M18 12v.5\" /> <path d=\"M16 17.93a9.77 9.77 0 0 1 0-11.86\" /> <path d=\"M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33\" /> <path d=\"M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4\" /> <path d=\"m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98\" />", "frozen": "<path d=\"m10 20-1.25-2.5L6 18\" /> <path d=\"M10 4 8.75 6.5 6 6\" /> <path d=\"m14 20 1.25-2.5L18 18\" /> <path d=\"m14 4 1.25 2.5L18 6\" /> <path d=\"m17 21-3-6h-4\" /> <path d=\"m17 3-3 6 1.5 3\" /> <path d=\"M2 12h6.5L10 9\" /> <path d=\"m20 10-1.5 2 1.5 2\" /> <path d=\"M22 12h-6.5L14 15\" /> <path d=\"m4 10 1.5 2L4 14\" /> <path d=\"m7 21 3-6-1.5-3\" /> <path d=\"m7 3 3 6h4\" />", "oils": "<path d=\"M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z\" />", "pasta": "<path d=\"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2\" /> <path d=\"M7 2v20\" /> <path d=\"M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7\" />", "sauces": "<path d=\"M2 12h20\" /> <path d=\"M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8\" /> <path d=\"m4 8 16-4\" /> <path d=\"m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8\" />", "snacks": "<path d=\"M11 17h.01\" /> <path d=\"M11.496 2c.324-.016.558.292.529.615a4 4 0 004.235 4.368.713.713 0 01.758.757 4 4 0 004.366 4.237c.323-.03.63.204.614.527a10 10 0 01-2.915 6.566A1 1 0 114.93 4.918 10 10 0 0111.496 2\" /> <path d=\"M12 12h.01\" /> <path d=\"M16 16h.01\" /> <path d=\"M16 3h.01\" /> <path d=\"M21 4h.01\" /> <path d=\"M21 8h.01\" /> <path d=\"M7 14h.01\" /> <path d=\"M9 8h.01\" />", "soups": "<path d=\"M11.248 3c.273.1.808.53.747 1.36-.05.83-.938 1.2-.989 2.02-.06.78.333 1.24.727 1.62\" /> <path d=\"M16.252 3c.268.1.794.53.745 1.36-.06.83-.923 1.2-.993 2.02-.05.78.338 1.24.725 1.62\" /> <path d=\"M19.5 12 22 6\" /> <path d=\"M4 12a1 1 0 00-.99 1.133A9 9 0 0012 21a9 9 0 008.99-7.867A1 1 0 0020 12z\" /> <path d=\"M6.252 3c.268.1.794.53.745 1.36-.06.83-.923 1.2-.993 2.02-.05.78.338 1.24.735 1.62\" /> <path d=\"M7 21h10\" />", "syrups": "<path d=\"M10 7v10.9\" /> <path d=\"M14 6.1V17\" /> <path d=\"M16 7V3a1 1 0 0 1 1.707-.707 2.5 2.5 0 0 0 2.152.717 1 1 0 0 1 1.131 1.131 2.5 2.5 0 0 0 .717 2.152A1 1 0 0 1 21 8h-4\" /> <path d=\"M16.536 7.465a5 5 0 0 0-7.072 0l-2 2a5 5 0 0 0 0 7.07 5 5 0 0 0 7.072 0l2-2a5 5 0 0 0 0-7.07\" /> <path d=\"M8 17v4a1 1 0 0 1-1.707.707 2.5 2.5 0 0 0-2.152-.717 1 1 0 0 1-1.131-1.131 2.5 2.5 0 0 0-.717-2.152A1 1 0 0 1 3 16h4\" />", "vending": "<path d=\"M10 2v2\" /> <path d=\"M14 2v2\" /> <path d=\"M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1\" /> <path d=\"M6 2v2\" />", "nonfood": "<path d=\"M3 3h.01\" /> <path d=\"M7 5h.01\" /> <path d=\"M11 7h.01\" /> <path d=\"M3 7h.01\" /> <path d=\"M7 9h.01\" /> <path d=\"M3 11h.01\" /> <rect width=\"4\" height=\"4\" x=\"15\" y=\"5\" /> <path d=\"m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2\" /> <path d=\"m13 14 8-2\" /> <path d=\"m13 19 8-2\" />", "meat": "<path d=\"M16.4 13.7A6.5 6.5 0 1 0 6.28 6.6c-1.1 3.13-.78 3.9-3.18 6.08A3 3 0 0 0 5 18c4 0 8.4-1.8 11.4-4.3\" /> <path d=\"m18.5 6 1.754 3.5a6.48 6.48 0 0 1-1.854 8.2C15.4 20.2 11 22 7 22a3 3 0 0 1-2.68-1.66L2.4 16.5\" /> <circle cx=\"12.5\" cy=\"8.5\" r=\"2.5\" />", "other": "<path d=\"M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z\" /> <path d=\"M12 22V12\" /> <polyline points=\"3.29 7 12 12 20.71 7\" /> <path d=\"m7.5 4.27 9 5.15\" />"}; function cIcon(k){return CICON[k]?'<svg class="c-ic" viewBox="0 0 24 24" aria-hidden="true">'+CICON[k]+'</svg>':''}
   function motif(key){return '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+DATA.motif[key]+'</svg>'}
 
   DATA.labels.barcode=['Barcode','الباركود']; DATA.labels.storage=['Storage','التخزين']; DATA.labels.ideal=['Ideal for','مثالي لـ'];
@@ -1718,7 +1746,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   ITEMS.forEach(function(p){if(p.kind==='brand')return; var g=grp(p), L=SUBS[p.k]=SUBS[p.k]||[], f=null; L.forEach(function(x){if(x.en===g.en)f=x}); if(!f){f={en:g.en,ar:g.ar,n:0,o:p.kind==='brand'?999:L.length};L.push(f)} f.n++; subIdx[p.k+'|'+g.en]=f.o});
   Object.keys(SUBS).forEach(function(k){SUBS[k].sort(function(a,b){return a.o-b.o})});
   var subchips=document.createElement('div'); subchips.className='chips subchips'; subchips.setAttribute('role','group'); subchips.setAttribute('aria-label','Sub-categories');
-  cats.innerHTML=catList.map(function(r){return '<button type="button" class="cat" data-range="'+r.key+'"><b>'+esc(SHORT[r.key]||r.en)+'</b><i>'+count[r.key]+'</i>'+ar('em',r.ar)+'</button>'}).join('');
+  cats.innerHTML=catList.map(function(r){return '<button type="button" class="cat" data-range="'+r.key+'">'+cIcon(r.key)+'<b>'+esc(SHORT[r.key]||r.en)+'</b><i>'+count[r.key]+'</i>'+ar('em',r.ar)+'</button>'}).join('');
   chips.innerHTML=catList.map(function(r){return '<button type="button" class="chip" data-range="'+r.key+'">'+esc(r.key==='all'?'All':(SHORT[r.key]||r.en))+'<i>'+count[r.key]+'</i></button>'}).join('');
   var brandNames={}; ITEMS.forEach(function(p){if(p.brand)brandNames[p.brand]=1});
 
@@ -1857,7 +1885,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   fpop.addEventListener('click',function(e){var a=e.target.closest('[data-acc]'); if(a){var f=a.dataset.acc, b=$('#acc-'+f,fpop), o=a.getAttribute('aria-expanded')!=='true'; FOPEN[f]=o; a.setAttribute('aria-expanded',o); if(b)b.hidden=!o; return}
     if(e.target.closest('#fsqx')){FQ=''; drawSheet(); $('#fsq',fpop).focus()}});
   fpop.addEventListener('input',function(e){if(e.target.id==='fsq'){FQ=e.target.value; drawSheet()}});
-  fpop.addEventListener('change',function(e){var r=e.target.closest('[data-rg]'); if(r){if(r.value!=='all'&&!FQ){FOPEN.range=false; FOPEN.sub=true} setRange(r.value); if(r.value!=='all'&&!FQ){var hb=$('[data-acc="sub"]',fpop)||$('[data-acc="range"]',fpop); if(hb){hb.focus({preventScroll:true}); fpBody.scrollTop=0}}}});
+  fpop.addEventListener('change',function(e){var r=e.target.closest('[data-rg]'); if(r){if(r.value!=='all'&&!FQ){FOPEN.range=false; FOPEN.sub=true} setRange(r.value); toResults(); if(r.value!=='all'&&!FQ){var hb=$('[data-acc="sub"]',fpop)||$('[data-acc="range"]',fpop); if(hb){hb.focus({preventScroll:true}); fpBody.scrollTop=0}}}});
   function filterList(inp){var t2=inp.value.trim().toLowerCase(); $$('li',$('[data-fl="'+inp.dataset.fs+'"]',fpop)).forEach(function(li){li.hidden=t2&&li.dataset.v.indexOf(t2)<0})}
   function openPop(b){var f=b.dataset.facet; if(!fpop.hidden&&fpFacet===f){closePop();return} fpFacet=f; fpBtn=b; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded',x===b)});
     fpop.hidden=false; fpop.classList.toggle('sheet-mode',f==='all'||innerWidth<720); drawPop(); place();
@@ -1895,7 +1923,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   function gKey(p){return p.k+'|'+grp(p).en}
   function gCount(list){var c={}; list.forEach(function(p){var k=gKey(p);c[k]=(c[k]||0)+1}); return c}
   function gLabel(p){var g=grp(p), r=rangeBy[p.k]; var en=(state.range==='all'?(SHORT[p.k]||r.en)+' · ':'')+g.en, arr=(state.range==='all'?r.ar+' · ':'')+g.ar; return {en:en,ar:arr}}
-  function gHead(p){var g=grp(p), r=rangeBy[p.k]; return (state.range==='all'?'<span class="g-cat">'+esc(SHORT[p.k]||r.en)+'<span lang="ar" dir="rtl">'+esc(r.ar)+'</span></span>':'')+'<span class="g-sub">'+esc(g.en)+'<span lang="ar" dir="rtl">'+esc(g.ar)+'</span></span>'}
+  function gHead(p){var g=grp(p), r=rangeBy[p.k]; return (state.range==='all'?'<span class="g-cat">'+cIcon(p.k)+esc(SHORT[p.k]||r.en)+'<span lang="ar" dir="rtl">'+esc(r.ar)+'</span></span>':'')+'<span class="g-sub">'+esc(g.en)+'<span lang="ar" dir="rtl">'+esc(g.ar)+'</span></span>'}
   function gridHTML(list,all){var h='',last='',open=false,c=gCount(all),G=grouped(); list.forEach(function(p){var k=gKey(p); if(G&&k!==last){if(open)h+='</div>'; var L=gLabel(p); h+='<div class="gsec"><div class="grp" role="heading" aria-level="3">'+gHead(p)+'<i>'+c[k]+'</i></div>'; open=true; last=k} h+=cardHTML(p)}); if(open)h+='</div>'; return h}
   function drawSubs(){
     $$('.subs',cats).forEach(function(x){x.remove()});
@@ -1927,7 +1955,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
       pager.innerHTML='<p class="pg-t" role="status">Showing '+hi+' of '+n+'</p><span class="pg-bar" aria-hidden="true"><span style="width:'+Math.round(hi/n*100)+'%"></span></span>'
         +(more>0?'<button type="button" class="btn btn-ghost pg-more" data-more>Show '+more+' more</button>':'<p class="pg-end">That’s everything.</p>');}
   }
-  function toResults(){var top=$('.shop').getBoundingClientRect().top, off=$('#header').offsetHeight+16; if(top<0) window.scrollTo(0,window.scrollY+top-off)}
+  function toResults(){if(window.__sfsTop) window.__sfsTop()}
   function setRange(k){state.range=k;state.subs=[];state.fold=false;state.page=1;render();
     var c=$('.chip[aria-pressed="true"]',chips); if(c&&chips.offsetParent) chips.scrollTo({left:c.offsetLeft-chips.clientWidth/2+c.offsetWidth/2,behavior:'smooth'});}
   function onCat(e){var s=e.target.closest('[data-sub]'); if(s){var v=s.dataset.sub, ix=state.subs.indexOf(v); state.subs=(ix>-1&&state.subs.length===1)?[]:[v]; state.page=1; render(); toResults(); return} var b=e.target.closest('[data-range]'); if(b){if(b.dataset.range===state.range&&state.range!=='all'&&b.classList.contains('cat')){state.fold=!state.fold;drawSubs();updateCounts();return} setRange(b.dataset.range);toResults()}}
@@ -1966,14 +1994,16 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
     var mob=innerWidth<720; document.body.classList.toggle('cb-mob',mob); var on=true||mob||(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
     if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); document.documentElement.style.scrollPaddingTop=on?(hh+cbar.offsetHeight+16)+'px':''; stickTop&&stickTop(); if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
   function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
-  addEventListener('scroll',cbCheck,{passive:true}); addEventListener('scroll',stickTop,{passive:true}); addEventListener('resize',stickTop); addEventListener('resize',cbCheck); 
+  addEventListener('scroll',cbCheck,{passive:true}); addEventListener('resize',stickTop); addEventListener('resize',cbCheck); 
   cq.addEventListener('input',function(){state.q=cq.value; q.value=cq.value; state.page=1; render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight+2; if(scrollY>y) scrollTo(0,y)});
   cSort.addEventListener('change',function(){selSort.value=cSort.value; selSort.dispatchEvent(new Event('change'))});
   cbView.addEventListener('click',function(){state.view=state.view==='list'?'grid':'list'; state.page=1; try{localStorage.setItem('sfs-view',state.view)}catch(e){} render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight; if(scrollY>y) scrollTo(0,y)});
   $('#cbSo').addEventListener('click',function(){cbar.classList.add('s-open'); cq.focus()});
   $('#cbSx').addEventListener('click',function(){cbar.classList.remove('s-open'); $('#cbSo').focus()});
   cq.addEventListener('keydown',function(e){if(e.key==='Escape'){cbar.classList.remove('s-open'); $('#cbSo').focus()}});
-  var _render=render; render=function(){_render(); syncCbar(); cbCheck(); stickTop()};
+  var _render=render, rKey=null, rPend=false, RT=document.documentElement; function rUp(){try{window.scrollTo({top:0,left:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}}
+  render=function(){_render(); syncCbar(); cbCheck(); stickTop(); var nk=state.range+'|'+state.subs.join('\u0001'); if(rKey!==null&&nk!==rKey){if(RT.classList.contains('ov-lock')) rPend=true; else rUp()} rKey=nk};
+  new MutationObserver(function(){if(rPend&&!RT.classList.contains('ov-lock')){rPend=false; setTimeout(rUp,0); setTimeout(rUp,80)}}).observe(RT,{attributes:true,attributeFilter:['class']});
   syncCbar(); cbCheck();
 
   ITEMS.forEach(function(p){p.tag=null});
@@ -2333,10 +2363,10 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
 <script>
 (function(){
   var side=document.querySelector('.side'), sec=document.getElementById('products'), R=document.documentElement; if(!side||!sec) return;
-  var raf=0;
-  function fit(){raf=0; if(!matchMedia('(min-width:1024px)').matches){R.style.removeProperty('--side-h'); return}
+  var raf=0, last='';
+  function fit(){raf=0; if(!matchMedia('(min-width:1024px)').matches){side.style.removeProperty('--side-h'); last=''; return}
     var top=parseFloat(getComputedStyle(side).top)||121, shop=side.parentElement.getBoundingClientRect();
-    var room=Math.min(innerHeight-16, shop.bottom)-top; R.style.setProperty('--side-h',Math.max(120,Math.round(room))+'px')}
+    var room=Math.min(innerHeight-16, shop.bottom)-top, v=Math.max(120,Math.round(room))+'px'; if(v!==last){last=v; side.style.setProperty('--side-h',v)}}
   function q(){if(!raf) raf=requestAnimationFrame(fit)}
   addEventListener('scroll',q,{passive:true}); addEventListener('resize',q);
   new MutationObserver(q).observe(document.getElementById('grid')||sec,{childList:true,subtree:false});
@@ -2347,11 +2377,18 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
 <script>
 (function(){
   var cell=document.querySelector('.side-cell'), R=document.documentElement; if(!cell) return;
-  function top(){ if(!matchMedia('(min-width:1024px)').matches){R.style.removeProperty('--side-top'); return}
+  var lastT=''; function top(){ var sd=cell.firstElementChild; if(!matchMedia('(min-width:1024px)').matches){sd.style.removeProperty('--side-top'); lastT=''; return}
     var cs=getComputedStyle(R), pin=(parseFloat(cs.getPropertyValue('--head'))||48)+(parseFloat(cs.getPropertyValue('--cbar-h'))||57)+16;
     var base=cell.getBoundingClientRect().top+scrollY;
-    R.style.setProperty('--side-top',Math.round(base-pin<=24?Math.max(base,pin):Math.max(pin,base-scrollY))+'px')}
+    var v=Math.round(base-pin<=24?Math.max(base,pin):Math.max(pin,base-scrollY))+'px'; if(v!==lastT){lastT=v; sd.style.setProperty('--side-top',v)}}
   addEventListener('resize',top); addEventListener('scroll',top,{passive:true}); top(); setTimeout(top,400);
+})();
+</script>
+<script>
+(function(){var R=document.documentElement, pend=false;
+  function up(){try{window.scrollTo({top:0,left:0,behavior:'instant'})}catch(e){window.scrollTo(0,0)}}
+  window.__sfsTop=function(){if(R.classList.contains('ov-lock')) pend=true; else up()};
+  new MutationObserver(function(){if(pend&&!R.classList.contains('ov-lock')){pend=false; setTimeout(up,0); setTimeout(up,80)}}).observe(R,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 </body>
