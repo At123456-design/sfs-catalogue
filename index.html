@@ -1112,6 +1112,33 @@ html[data-theme="dark"] .qd-backdrop,html[data-theme="dark"] .fp-back,html[data-
 .theme-seg{display:inline-flex;border-radius:10px;box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
 .theme-seg button{min-height:44px;padding:0 12px;font-size:14px;font-weight:500;color:var(--muted)}
 .theme-seg button[aria-pressed="true"]{background:var(--tint);color:var(--ink)}
+
+/* ---------- sticky sub-category headers: stay until the next one pushes them up ---------- */
+.grid>.gsec{grid-column:1/-1;display:grid;grid-template-columns:inherit;gap:inherit}
+.gsec>.grp{position:sticky;top:var(--stick-top,48px);z-index:4;background:var(--page,#fff);margin-top:0;padding-top:12px}
+.grid>.gsec+.gsec{margin-top:8px}
+.list tr.grp-row th,body.cb-on .list tr.grp-row th{position:sticky!important;top:var(--stick-list,48px)!important;z-index:4}
+/* ---------- group headers: category first, sub-category wraps below when they don't fit ---------- */
+.grp,.list .gh{display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:16px;row-gap:2px;position:relative;padding-right:44px!important}
+.list tr.grp-row th{display:table-cell!important}
+.grp .g-cat,.list .grp-row .g-cat{font-size:13px!important;font-weight:500!important;color:var(--muted)!important;white-space:nowrap}
+.grp .g-sub,.list .grp-row .g-sub{font-size:15px!important;font-weight:600!important;color:var(--ink)!important}
+.grp .g-cat span[lang],.grp .g-sub span[lang],.grp-row .g-cat span[lang],.grp-row .g-sub span[lang]{margin-left:8px!important;font-size:inherit!important;font-weight:500!important;color:var(--muted)!important}
+.grp .g-sub span[lang],.grp-row .g-sub span[lang]{font-size:14px!important}
+.g-cat span[lang],.g-sub span[lang]{display:inline-block}
+.list tr.grp-row th .gh span[lang]{margin-left:8px!important}
+.grp>i,.gh>i{position:absolute;right:2px;bottom:8px;margin:0!important}
+.list .gh>i{right:16px;width:auto!important}
+/* ---------- phones: the compact bar is the toolbar ---------- */
+@media (max-width:719px){
+  .side .search{display:none!important}
+  .toolbar .filters>*:not(.addit){display:none!important}
+  .toolbar .filters{display:block!important}
+  body.cb-mob #main{padding-top:56px}
+  .list tbody.gsec,.list tbody{display:block}
+  .list tr.grp-row th{display:block!important;position:static!important}
+  .list tr.grp-row{position:sticky;top:var(--stick-list,48px);z-index:4;background:var(--tint)}
+}
 </style>
 </head>
 <body>
@@ -1342,7 +1369,7 @@ html[data-theme="dark"] .qd-backdrop,html[data-theme="dark"] .fp-back,html[data-
       var on=c[0]&&state.sort===c[0];
       return '<th class="'+c[2]+'"'+(c[2]==='l-ar'?' lang="ar" dir="rtl"':'')+(on?' aria-sort="'+(state.desc?'descending':'ascending')+'"':'')+'>'+(c[0]?'<button type="button" data-sort="'+c[0]+'">'+c[1]+'<i aria-hidden="true">'+(on?(state.desc?'▼':'▲'):'')+'</i></button>':c[1])+'</th>'}).join('')+'</tr></thead><tbody>';
     list.forEach(function(p){
-      var gk=gKey(p); if(G&&gk!==lastG){var GL=gLabel(p); h+='<tr class="grp-row"><th colspan="7" scope="colgroup"><span>'+esc(GL.en)+'</span><span lang="ar" dir="rtl">'+esc(GL.ar)+'</span><i>'+gc[gk]+'</i></th></tr>'; lastG=gk}
+      var gk=gKey(p); if(G&&gk!==lastG){var GL=gLabel(p); if(lastG!=='')h+='</tbody><tbody class="gsec">'; h+='<tr class="grp-row"><th colspan="7" scope="colgroup"><div class="gh">'+gHead(p)+'<i>'+gc[gk]+'</i></div></th></tr>'; lastG=gk}
       var s=p.specs, isB=p.kind==='brand', n=(kids[p.id]||[]).length, bn=s.brand?s.brand.en:'', code=s.code?s.code.en:'';
       var pack=isB?(n?n+(n===1?' product':' products'):''):[packOf(p),s.packing&&s.packing.en].filter(Boolean).join(' · ');
       h+='<tr data-id="'+p.id+'"><td><span class="l-thumb">'+(p.img?'<img'+(p.img===1?' class="cover"':'')+' src="'+imgSrc(p)+'" alt="" loading="lazy">':motif(p.k))+'</span></td>'
@@ -1456,7 +1483,8 @@ html[data-theme="dark"] .qd-backdrop,html[data-theme="dark"] .fp-back,html[data-
   function gKey(p){return p.k+'|'+grp(p).en}
   function gCount(list){var c={}; list.forEach(function(p){var k=gKey(p);c[k]=(c[k]||0)+1}); return c}
   function gLabel(p){var g=grp(p), r=rangeBy[p.k]; var en=(state.range==='all'?(SHORT[p.k]||r.en)+' · ':'')+g.en, arr=(state.range==='all'?r.ar+' · ':'')+g.ar; return {en:en,ar:arr}}
-  function gridHTML(list,all){var h='',last='',c=gCount(all),G=grouped(); list.forEach(function(p){var k=gKey(p); if(G&&k!==last){var L=gLabel(p); h+='<div class="grp" role="heading" aria-level="3"><span>'+esc(L.en)+'</span><span lang="ar" dir="rtl">'+esc(L.ar)+'</span><i>'+c[k]+'</i></div>'; last=k} h+=cardHTML(p)}); return h}
+  function gHead(p){var g=grp(p), r=rangeBy[p.k]; return (state.range==='all'?'<span class="g-cat">'+esc(SHORT[p.k]||r.en)+'<span lang="ar" dir="rtl">'+esc(r.ar)+'</span></span>':'')+'<span class="g-sub">'+esc(g.en)+'<span lang="ar" dir="rtl">'+esc(g.ar)+'</span></span>'}
+  function gridHTML(list,all){var h='',last='',open=false,c=gCount(all),G=grouped(); list.forEach(function(p){var k=gKey(p); if(G&&k!==last){if(open)h+='</div>'; var L=gLabel(p); h+='<div class="gsec"><div class="grp" role="heading" aria-level="3">'+gHead(p)+'<i>'+c[k]+'</i></div>'; open=true; last=k} h+=cardHTML(p)}); if(open)h+='</div>'; return h}
   function drawSubs(){
     $$('.subs',cats).forEach(function(x){x.remove()});
     var L=state.range!=='all'?SUBS[state.range]:null, show=L&&!state.fold;
@@ -1523,16 +1551,17 @@ html[data-theme="dark"] .qd-backdrop,html[data-theme="dark"] .fp-back,html[data-
     var isL=state.view==='list'; cbView.innerHTML=isL?GRIDI:LISTI; cbView.setAttribute('aria-label',isL?'Switch to grid view':'Switch to list view');
     var r=rangeBy[state.range]; $('#cbT').textContent=(r?r.en:'All products')+' · '+tbCount.textContent}
   function cbCheck(){var hh=$('#header').offsetHeight, tr=tb.getBoundingClientRect(), pr=prodSec.getBoundingClientRect();
-    var on=(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
-    if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); document.documentElement.style.scrollPaddingTop=on?(hh+cbar.offsetHeight+16)+'px':''; if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
-  addEventListener('scroll',cbCheck,{passive:true}); addEventListener('resize',cbCheck); 
+    var mob=innerWidth<720; document.body.classList.toggle('cb-mob',mob); var on=mob||(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
+    if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); document.documentElement.style.scrollPaddingTop=on?(hh+cbar.offsetHeight+16)+'px':''; stickTop&&stickTop(); if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
+  function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
+  addEventListener('scroll',cbCheck,{passive:true}); addEventListener('scroll',stickTop,{passive:true}); addEventListener('resize',stickTop); addEventListener('resize',cbCheck); 
   cq.addEventListener('input',function(){state.q=cq.value; q.value=cq.value; state.page=1; render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight+2; if(scrollY>y) scrollTo(0,y)});
   cSort.addEventListener('change',function(){selSort.value=cSort.value; selSort.dispatchEvent(new Event('change'))});
   cbView.addEventListener('click',function(){state.view=state.view==='list'?'grid':'list'; state.page=1; try{localStorage.setItem('sfs-view',state.view)}catch(e){} render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight; if(scrollY>y) scrollTo(0,y)});
   $('#cbSo').addEventListener('click',function(){cbar.classList.add('s-open'); cq.focus()});
   $('#cbSx').addEventListener('click',function(){cbar.classList.remove('s-open'); $('#cbSo').focus()});
   cq.addEventListener('keydown',function(e){if(e.key==='Escape'){cbar.classList.remove('s-open'); $('#cbSo').focus()}});
-  var _render=render; render=function(){_render(); syncCbar(); cbCheck()};
+  var _render=render; render=function(){_render(); syncCbar(); cbCheck(); stickTop()};
   syncCbar(); cbCheck();
 
   /* ---------- Team-added items: Editors only (artifact db + user roles) ---------- */
