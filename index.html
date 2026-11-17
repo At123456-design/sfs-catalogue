@@ -960,6 +960,49 @@ body.has-q .footer{padding-bottom:80px!important}
   .fpop.sheet-mode .fp-panel{top:auto!important;left:0!important;width:100%;max-height:88vh;border-radius:16px 16px 0 0}
 }
 @media (min-width:720px){.fbtn{min-height:40px}}
+
+/* ---------- compact bar (Material 3 / iOS: controls condense on scroll, never disappear) ---------- */
+.cbar{position:fixed;left:0;right:0;z-index:39;transform:translateY(-110%);opacity:0;pointer-events:none;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .18s;background:rgba(255,255,255,.86);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.08)}
+.cbar.on{transform:none;opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.cbar{transition:opacity .01s}}
+@media (prefers-reduced-transparency:reduce){.cbar{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none}}
+.cb-in{max-width:1264px;margin:0 auto;padding:6px var(--gut);display:flex;align-items:center;gap:8px;min-height:56px;box-sizing:border-box}
+.cb-s{flex:0 1 340px;position:relative;display:flex;align-items:center}
+.cb-si{position:absolute;left:12px;color:var(--muted);display:flex}
+#cq{width:100%;height:40px;border:1px solid var(--line);border-radius:10px;padding:0 12px 0 40px;font:inherit;font-size:14px;background:#fff}
+#cq::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+#cq:focus{outline:2px solid var(--deep);outline-offset:1px}
+.cb-sx,.cb-sopen{display:none!important}
+.cb-t{flex:1;min-width:0;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-ic{width:44px;height:44px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:var(--ink);flex:none}
+.cb-ic:hover{background:var(--tint)}
+.cbar .cfb{display:inline-flex!important;min-height:40px}
+.cb-sort{position:relative;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);flex:none}
+.cb-sort svg{flex:none;color:var(--muted)}
+.cb-sort select{border:0;background:none;font:inherit;font-size:14px;font-weight:500;color:var(--ink);padding-right:4px;cursor:pointer;-webkit-appearance:none;appearance:none}
+.cb-sort:focus-within{outline:2px solid var(--deep);outline-offset:1px}
+@media (max-width:1023px){#cq,.cbar .cfb,.cb-sort{height:44px;min-height:44px}.cb-sort select{height:44px;margin:-1px 0}}
+.cb-sort select{align-self:stretch;min-height:100%}
+body.cb-on .list th{top:calc(var(--head) + 57px)!important}
+@media (max-width:719px){
+  .cb-in{gap:4px}
+  .cbar .cfb,.cb-sort{border:0!important;background:none!important}
+  .cbar .cfb:hover,.cb-sort:hover{background:var(--tint)!important}
+  .cbar .cfb.on{color:var(--deep)}
+  .cb-s{display:none;flex:1}
+  .cbar.s-open .cb-s{display:flex}
+  .cbar.s-open .cb-s~*{display:none!important}
+  .cbar.s-open .cb-sx{display:inline-flex!important}
+  .cb-sopen{display:inline-flex!important}
+  .cbar.s-open .cb-sopen{display:none!important}
+  .cb-t{font-size:12px}
+  .cbar .cfb{width:44px;height:44px;min-height:44px;padding:0;justify-content:center;border-radius:10px;position:relative}
+  .cbar .cfb .cb-l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .cbar .cfb .fn{position:absolute;top:2px;right:2px;min-width:20px;height:20px;font-size:12px;padding:0 5px}
+  .cb-sort{width:44px;height:44px;padding:0;justify-content:center}
+  .cb-sort select{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+  body.cb-on .qbar{bottom:max(16px,env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -1056,6 +1099,7 @@ body.has-q .footer{padding-bottom:80px!important}
   <div class="fp-body" id="fpBody"></div>
   <div class="fp-foot"><button type="button" class="btn btn-quiet" id="fpClear">Clear</button><button type="button" class="btn btn-primary" id="fpShow" data-fclose>Show results</button></div>
 </div></div>
+<div class="cbar" id="cbar" aria-label="Search, filter and sort" role="region" inert><div class="cb-in"><div class="cb-s" id="cbS"><span class="cb-si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><label class="vh" for="cq">Search products and brands</label><input type="search" id="cq" placeholder="Search products and brands" autocomplete="off"><button type="button" class="cb-ic cb-sx" id="cbSx" aria-label="Close search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><button type="button" class="cb-ic cb-sopen" id="cbSo" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><p class="cb-t" id="cbT" aria-hidden="true"></p><button type="button" class="fbtn cfb" data-facet="all" aria-haspopup="dialog" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="cb-l">Filters</span><span class="fn" hidden></span></button><label class="cb-sort"><span class="vh">Sort</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></svg><select id="cSort"></select></label><button type="button" class="cb-ic" id="cbView" aria-label="Switch to list view"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></button></div></div>
 <div class="qbar" id="qbar" hidden><button type="button" class="qopen" aria-haspopup="dialog"><span class="qbadge" data-qn>0</span><span class="qbar-t">in your quote list</span><span class="qbar-a">Review and send</span></button></div>
 <div class="qd" id="qd" role="dialog" aria-modal="true" aria-labelledby="qdT" hidden>
   <div class="qd-backdrop" data-qclose></div>
@@ -1330,6 +1374,25 @@ body.has-q .footer{padding-bottom:80px!important}
   pager.addEventListener('click',function(e){var b=e.target.closest('[data-more]'); if(!b) return; var y=scrollY, k=$$('.card-wrap,tr[data-id]',grid).length; state.page++; render(); scrollTo(0,y); var nx=$$('.card-wrap a.card,tr[data-id] .l-name a',grid)[k]; if(nx) nx.focus({preventScroll:true})});
   empty.addEventListener('click',function(e){if(e.target.closest('#reset')){state.brands=[];state.origins=[];state.q='';q.value='';setRange('all');q.focus()}});
   render();
+
+  /* ---------- Compact bar: search, filter, sort stay reachable while scrolling ---------- */
+  var cbar=$('#cbar'), cq=$('#cq'), cSort=$('#cSort'), tb=$('.toolbar'), prodSec=$('#products'), cbView=$('#cbView');
+  var GRIDI='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>', LISTI='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>';
+  function syncCbar(){cSort.innerHTML=selSort.innerHTML; cSort.value=selSort.value; if(document.activeElement!==cq) cq.value=state.q;
+    var isL=state.view==='list'; cbView.innerHTML=isL?GRIDI:LISTI; cbView.setAttribute('aria-label',isL?'Switch to grid view':'Switch to list view');
+    var r=rangeBy[state.range]; $('#cbT').textContent=(r?r.en:'All products')+' · '+tbCount.textContent}
+  function cbCheck(){var hh=$('#header').offsetHeight, tr=tb.getBoundingClientRect(), pr=prodSec.getBoundingClientRect();
+    var on=(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||cbar.contains(document.activeElement)||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
+    if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
+  addEventListener('scroll',cbCheck,{passive:true}); addEventListener('resize',cbCheck); 
+  cq.addEventListener('input',function(){state.q=cq.value; q.value=cq.value; state.page=1; render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight+2; if(scrollY>y) scrollTo(0,y)});
+  cSort.addEventListener('change',function(){selSort.value=cSort.value; selSort.dispatchEvent(new Event('change'))});
+  cbView.addEventListener('click',function(){state.view=state.view==='list'?'grid':'list'; state.page=1; try{localStorage.setItem('sfs-view',state.view)}catch(e){} render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight; if(scrollY>y) scrollTo(0,y)});
+  $('#cbSo').addEventListener('click',function(){cbar.classList.add('s-open'); cq.focus()});
+  $('#cbSx').addEventListener('click',function(){cbar.classList.remove('s-open'); $('#cbSo').focus()});
+  cq.addEventListener('keydown',function(e){if(e.key==='Escape'){cbar.classList.remove('s-open'); $('#cbSo').focus()}});
+  var _render=render; render=function(){_render(); syncCbar(); cbCheck()};
+  syncCbar(); cbCheck();
 
   /* ---------- Quote list ---------- */
   var qbar=$('#qbar'), qd=$('#qd'), qdBody=$('#qdBody'), qNote=$('#qNote'), qLast=null;
