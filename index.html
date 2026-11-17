@@ -1289,6 +1289,29 @@ html[data-theme="dark"]{--green:#44A615;--deep:#7CCB5C;--soft:#1A3312;--soft-lin
 #qbar .qopen .qbadge,#qbar .qopen .qbar-a{height:36px!important;min-height:36px;box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;border-radius:980px!important;font-size:14px!important;font-weight:600;line-height:1}
 #qbar .qopen .qbadge{min-width:36px!important;width:auto;padding:0 10px!important;font-variant-numeric:tabular-nums}
 #qbar .qopen .qbar-a{padding:0 16px!important}
+
+/* ---------- add button: plus morphs into a tick (two strokes move, the circle fills and a ring pulses). Transform and opacity only ---------- */
+.add .pm path{vector-effect:non-scaling-stroke;stroke-width:1.7px}
+.add .pm .l1{transform:translate(12px,12px) rotate(90deg)}
+.add .pm .l2{transform:translate(12px,12px) rotate(0deg)}
+.add[aria-pressed="true"] .pm .l1{transform:translate(14.5px,12px) rotate(132deg) scaleX(.96)}
+.add[aria-pressed="true"] .pm .l2{transform:translate(7.5px,14.5px) rotate(45deg) scaleX(.505)}
+.add::after{content:"";position:absolute;inset:4px;border-radius:50%;box-shadow:0 0 0 2px var(--fill);opacity:0;pointer-events:none}
+@keyframes pmA{from{transform:translate(12px,12px) rotate(90deg)}to{transform:translate(14.5px,12px) rotate(132deg) scaleX(.96)}}
+@keyframes pmB{from{transform:translate(12px,12px) rotate(0deg)}to{transform:translate(7.5px,14.5px) rotate(45deg) scaleX(.505)}}
+@keyframes pmA2{from{transform:translate(14.5px,12px) rotate(132deg) scaleX(.96)}to{transform:translate(12px,12px) rotate(90deg)}}
+@keyframes pmB2{from{transform:translate(7.5px,14.5px) rotate(45deg) scaleX(.505)}to{transform:translate(12px,12px) rotate(0deg)}}
+@keyframes pmFill{0%{transform:scale(.72);opacity:.4}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1)}}
+@keyframes pmRing{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.55);opacity:0}}
+@keyframes pmOut{0%{transform:scale(1.08)}100%{transform:scale(1)}}
+.add.just-on .pm .l1{animation:pmA .34s cubic-bezier(.32,.72,0,1) both}
+.add.just-on .pm .l2{animation:pmB .34s cubic-bezier(.32,.72,0,1) both}
+.add.just-on::before{animation:pmFill .36s cubic-bezier(.32,.72,0,1) both}
+.add.just-on::after{animation:pmRing .5s ease-out both}
+.add.just-off .pm .l1{animation:pmA2 .28s cubic-bezier(.32,.72,0,1) both}
+.add.just-off .pm .l2{animation:pmB2 .28s cubic-bezier(.32,.72,0,1) both}
+.add.just-off::before{animation:pmOut .28s ease-out both}
+@media (prefers-reduced-motion:reduce){.add.just-on .pm path,.add.just-off .pm path,.add.just-on::before,.add.just-on::after,.add.just-off::before{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1514,7 +1537,7 @@ html[data-theme="dark"]{--green:#44A615;--deep:#7CCB5C;--soft:#1A3312;--soft-lin
   function saveQ(){try{localStorage.setItem('sfs-quote',JSON.stringify(QUOTE))}catch(e){} syncQ()}
   function qIds(){return Object.keys(QUOTE)}
   function addBtn(p){if(p.kind==='brand')return ''; var on=!!QUOTE[p.id];
-    return '<button type="button" class="add" data-add="'+p.id+'" aria-pressed="'+on+'" aria-label="'+(on?'Remove ':'Add ')+esc(p.n.en)+(on?' from':' to')+' quote list">'+(on?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>')+'</button>'}
+    return '<button type="button" class="add" data-add="'+p.id+'" aria-pressed="'+on+'" aria-label="'+(on?'Remove ':'Add ')+esc(p.n.en)+(on?' from':' to')+' quote list">'+'<svg class="pm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><path class="l1" d="M-7 0H7"/><path class="l2" d="M-7 0H7"/></svg>'+'</button>'}
   function cardHTML(p){
     var s=p.specs, n=(kids[p.id]||[]).length, isB=p.kind==='brand', r=rangeBy[p.k];
     var tag='';
@@ -1818,7 +1841,7 @@ html[data-theme="dark"]{--green:#44A615;--deep:#7CCB5C;--soft:#1A3312;--soft-lin
 
   /* ---------- Quote list ---------- */
   var qbar=$('#qbar'), qd=$('#qd'), qdBody=$('#qdBody'), qNote=$('#qNote'), qLast=null;
-  function toggleQ(id){if(QUOTE[id])delete QUOTE[id]; else QUOTE[id]=1; saveQ(); render()}
+  function toggleQ(id){if(QUOTE[id])delete QUOTE[id]; else QUOTE[id]=1; var on=!!QUOTE[id]; saveQ(); render(); $$('[data-add="'+id+'"]').forEach(function(b){b.classList.add(on?'just-on':'just-off')})}
   function syncSheetAdd(){var sa=$('#sheetAdd'), on=!!QUOTE[sa.dataset.id]; sa.setAttribute('aria-pressed',on); sa.textContent=on?'In quote list ✓':'Add to quote list'; sa.classList.toggle('on',on)}
   function qText(){var L=qIds().map(function(id,i){var p=byId[id], s=p.specs; return (i+1)+'. '+p.n.en+(s.brand?' ('+s.brand.en+')':'')+(s.code?' · Item '+s.code.en:'')+(packOf(p)?' · '+packOf(p):'')+' · Qty '+QUOTE[id]});
     return 'Hello SFS, please quote the following items:\n\n'+L.join('\n')+(qNote.value.trim()?'\n\nNotes: '+qNote.value.trim():'')+'\n\nThank you.'}
