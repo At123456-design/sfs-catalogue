@@ -1147,9 +1147,10 @@ a,button,input,select,textarea,label,summary,[role="button"]{touch-action:manipu
   input,select,textarea,#q,#cq,#fsq,.fp-s,#qNote,[data-qi],.af-f input,.af-f select,.af-f textarea,.toolbar .select,#cSort{font-size:16px!important}
 }
 
-/* ---------- no duplicates: on phones the compact bar already shows title + count ---------- */
-body.cb-mob .toolbar > div:first-child{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
-body.cb-mob .toolbar{min-height:0}
+/* ---------- phone: page heading stays; the bar repeats it only after it has scrolled away (large-title pattern) ---------- */
+#cbT{transition:opacity .18s ease}
+body.cb-mob.h-vis #cbT{opacity:0;visibility:hidden}
+@media (prefers-reduced-motion:reduce){#cbT{transition:none}}
 
 /* ---------- on-screen keyboard: overlays follow the visible viewport; page behind is locked ---------- */
 :root{--vvt:0px;--vvh:100dvh;--vvb:0px}
@@ -1198,6 +1199,27 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
 @media (max-width:719px) and (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-panel{transition:none!important}}
 .qd{top:0!important;height:100dvh!important;bottom:0!important}
 .qd .qd-panel{box-sizing:border-box;padding-bottom:var(--vvb)}
+
+/* ---------- phone: category and sub-category live only in Filters (one place per job) ---------- */
+body.cb-mob #chips,body.cb-mob .subchips{display:none!important}
+body.cb-mob #products{padding-top:16px}
+body.cb-mob .shop{gap:0}
+
+/* ---------- filter sheet polish: clean edges where rows scroll under fixed parts ---------- */
+.fs-s{padding:12px 8px!important;margin:0 -8px;padding-left:16px!important;padding-right:16px!important;background:var(--surface)!important;box-shadow:0 1px 0 var(--line);z-index:3!important}
+.fpop.sheet-mode .acc-sec>.acc,.fpop.sheet-mode .acc-sec>h3>.acc{position:sticky;top:68px;z-index:2;background:var(--surface)}
+.fpop.sheet-mode .acc[aria-expanded="true"]{background:var(--surface);box-shadow:0 1px 0 var(--line);border-radius:0}
+.fpop.sheet-mode .acc-b{padding:4px 0 12px}
+.fpop.sheet-mode .fp-foot{box-shadow:0 -1px 0 var(--line);background:var(--surface)}
+
+/* ---------- one glass surface for header + compact bar (no seam, one blur, one hairline) ---------- */
+#chromeGlass{position:fixed;left:0;right:0;top:0;height:var(--head,48px);z-index:38;pointer-events:none;background:var(--glass);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);box-shadow:0 1px 0 var(--line)}
+body.cb-on #chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))}
+.header{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom-color:transparent!important}
+.cbar{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom-color:transparent!important;box-shadow:none!important}
+@media (prefers-reduced-motion:reduce){#chromeGlass{transition:none}}
+@media (prefers-reduced-transparency:reduce){#chromeGlass{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none}}
 </style>
 </head>
 <body>
@@ -1494,7 +1516,7 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
       var open=q?true:!!FOPEN[f];
       h+='<section class="acc-sec"><button type="button" class="acc" data-acc="'+f+'" aria-expanded="'+open+'" aria-controls="acc-'+f+'"><span class="acc-t">'+sc[1]+' <span lang="ar" dir="rtl">'+sc[2]+'</span></span><span class="acc-s'+(sum?' on':'')+'">'+esc(sum||(q?M.length+' match'+(M.length===1?'':'es'):'Any'))+'</span>'+CHEV+'</button><div class="acc-b" id="acc-'+f+'"'+(open?'':' hidden')+'><ul class="fp-list">'
         +M.map(function(o){var dis=!o.n&&!o.on;
-          if(f==='range') return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="radio" name="fsrg" data-rg="1" value="'+o.v+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box fo-rad" aria-hidden="true"></span><span class="fo-t">'+esc(o.en)+'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em></span><i>'+o.n+'</i></label></li>';
+          if(f==='range') return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="radio" name="fsrg" data-rg="1" value="'+o.v+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+esc(o.en)+'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em></span><i>'+o.n+'</i></label></li>';
           return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="checkbox" data-f="'+f+'" value="'+esc(o.v)+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+esc(o.en)+(o.ar?'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em>':'')+'</span><i>'+o.n+'</i></label></li>'}).join('')+'</ul></div></section>'});
     if(!any) h+='<p class="fs-none">No filters match “'+esc(FQ)+'”. <button type="button" class="link" id="fsqx">Clear search</button></p>';
     fpBody.innerHTML=h;
@@ -1504,7 +1526,7 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
   fpop.addEventListener('click',function(e){var a=e.target.closest('[data-acc]'); if(a){var f=a.dataset.acc, b=$('#acc-'+f,fpop), o=a.getAttribute('aria-expanded')!=='true'; FOPEN[f]=o; a.setAttribute('aria-expanded',o); if(b)b.hidden=!o; return}
     if(e.target.closest('#fsqx')){FQ=''; drawSheet(); $('#fsq',fpop).focus()}});
   fpop.addEventListener('input',function(e){if(e.target.id==='fsq'){FQ=e.target.value; drawSheet()}});
-  fpop.addEventListener('change',function(e){var r=e.target.closest('[data-rg]'); if(r){setRange(r.value)}});
+  fpop.addEventListener('change',function(e){var r=e.target.closest('[data-rg]'); if(r){if(r.value!=='all'&&!FQ){FOPEN.range=false; FOPEN.sub=true} setRange(r.value); if(r.value!=='all'&&!FQ){var hb=$('[data-acc="sub"]',fpop)||$('[data-acc="range"]',fpop); if(hb){hb.focus({preventScroll:true}); fpBody.scrollTop=0}}}});
   function filterList(inp){var t2=inp.value.trim().toLowerCase(); $$('li',$('[data-fl="'+inp.dataset.fs+'"]',fpop)).forEach(function(li){li.hidden=t2&&li.dataset.v.indexOf(t2)<0})}
   function openPop(b){var f=b.dataset.facet; if(!fpop.hidden&&fpFacet===f){closePop();return} fpFacet=f; fpBtn=b; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded',x===b)});
     fpop.hidden=false; fpop.classList.toggle('sheet-mode',f==='all'||innerWidth<720); drawPop(); place();
@@ -1833,6 +1855,13 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
 
 <script>
 (function(){
+  var h=document.querySelector('.toolbar > div:first-child'); if(!h||!('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function(es){document.body.classList.toggle('h-vis',es[0].isIntersecting)},{rootMargin:'-104px 0px 0px 0px',threshold:0.6}).observe(h);
+})();
+</script>
+
+<script>
+(function(){
   var R=document.documentElement, vv=window.visualViewport;
   function vvSync(){
     var h=vv?vv.height:innerHeight, top=vv?vv.offsetTop:0, b=Math.max(0,innerHeight-h-top);
@@ -1866,6 +1895,17 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
     if(dy>110||v>0.6){P.style.setProperty('--drag',dy+'px'); var x=fpop.querySelector('button[data-fclose]'); if(x) x.click(); else fpop.hidden=true}
     else {P.style.transition='transform .25s cubic-bezier(.32,.72,0,1)'; P.style.transform=''; setTimeout(function(){P.style.transition=''},260)}}
   H.addEventListener('pointerup',end); H.addEventListener('pointercancel',end);
+})();
+</script>
+
+<script>
+(function(){
+  var g=document.createElement('div'); g.id='chromeGlass'; g.setAttribute('aria-hidden','true'); document.body.insertBefore(g,document.body.firstChild);
+  var h=document.getElementById('header'), c=document.getElementById('cbar'), R=document.documentElement;
+  function sync(){if(h){R.style.setProperty('--head-h',h.offsetHeight+'px'); g.style.height=''; if(!document.body.classList.contains('cb-on')) g.style.height=h.offsetHeight+'px'} if(c) R.style.setProperty('--cbar-h',c.offsetHeight+'px');
+    document.body.classList.toggle('cb-on',!!(c&&c.classList.contains('on')))}
+  if(c) new MutationObserver(sync).observe(c,{attributes:true,attributeFilter:['class']});
+  addEventListener('resize',sync); sync();
 })();
 </script>
 </body>
