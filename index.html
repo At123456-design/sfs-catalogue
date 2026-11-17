@@ -1220,6 +1220,28 @@ body.cb-on #chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))}
 .cbar{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom-color:transparent!important;box-shadow:none!important}
 @media (prefers-reduced-motion:reduce){#chromeGlass{transition:none}}
 @media (prefers-reduced-transparency:reduce){#chromeGlass{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none}}
+
+/* ---------- phone chrome icons: one grid. 44px targets, 22px glyphs, 4px gaps, glyphs flush with the 20px page margin ---------- */
+@media (max-width:719px){
+  #themeBtn,#menuBtn,#cbSo,#cbar .cfb,#cbar .cb-sort,#cbView{width:44px!important;min-width:44px!important;height:44px!important;padding:0!important;margin:0!important;display:inline-flex!important;align-items:center;justify-content:center;flex:none}
+  #themeBtn>svg,#menuBtn>svg,#cbSo>svg,#cbar .cfb>svg,#cbar .cb-sort>svg,#cbView>svg{width:22px!important;height:22px!important;flex:none}
+  #cbar .cb-in{gap:4px!important}
+  #cbSo{margin-left:-11px!important}
+  #cbView,#menuBtn{margin-right:-11px!important}
+  #menuBtn{margin-left:-28px!important}
+  #themeBtn{margin-left:auto!important}
+  #cbar.s-open .cb-s~*{display:none!important}
+  #cbar.s-open .cb-sopen{display:none!important}
+  #cbar.s-open .cb-sx{display:inline-flex!important}
+  .menu{z-index:41!important}
+  /* sheets and drawers run under the browser's bottom bar, so it is the sheet's colour, not the dimmed page */
+  .fpop.sheet-mode .fp-panel{bottom:-140px!important;padding-bottom:calc(var(--vvb) + 140px)!important}
+  .qd .qd-panel{margin-bottom:-140px;padding-bottom:calc(var(--vvb) + 140px)!important}
+  .qd{height:calc(100dvh + 140px)!important;bottom:-140px!important}
+  .fpop.sheet-mode .fp-foot,.qd .qd-foot{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+}
+html[data-theme="dark"] .qd-backdrop,.qd-backdrop{background:rgba(0,0,0,.4)!important}
+html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
 </style>
 </head>
 <body>
@@ -1599,7 +1621,7 @@ body.cb-on #chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))}
   function toResults(){var top=$('.shop').getBoundingClientRect().top, off=$('#header').offsetHeight+16; if(top<0) window.scrollTo(0,window.scrollY+top-off)}
   function setRange(k){state.range=k;state.subs=[];state.fold=false;state.page=1;render();
     var c=$('.chip[aria-pressed="true"]',chips); if(c&&chips.offsetParent) chips.scrollTo({left:c.offsetLeft-chips.clientWidth/2+c.offsetWidth/2,behavior:'smooth'});}
-  function onCat(e){var s=e.target.closest('[data-sub]'); if(s){var v=s.dataset.sub, ix=state.subs.indexOf(v); if(ix>-1)state.subs.splice(ix,1); else state.subs.push(v); state.page=1; render(); toResults(); return} var b=e.target.closest('[data-range]'); if(b){if(b.dataset.range===state.range&&state.range!=='all'&&b.classList.contains('cat')){state.fold=!state.fold;drawSubs();updateCounts();return} setRange(b.dataset.range);toResults()}}
+  function onCat(e){var s=e.target.closest('[data-sub]'); if(s){var v=s.dataset.sub, ix=state.subs.indexOf(v); state.subs=(ix>-1&&state.subs.length===1)?[]:[v]; state.page=1; render(); toResults(); return} var b=e.target.closest('[data-range]'); if(b){if(b.dataset.range===state.range&&state.range!=='all'&&b.classList.contains('cat')){state.fold=!state.fold;drawSubs();updateCounts();return} setRange(b.dataset.range);toResults()}}
   cats.addEventListener('click',onCat); chips.addEventListener('click',onCat); subchips.addEventListener('click',onCat);
   q.addEventListener('input',function(){state.q=q.value;state.page=1;render()});
   qClear.addEventListener('click',function(){state.q='';q.value='';state.page=1;render();q.focus()});
@@ -1906,6 +1928,23 @@ body.cb-on #chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))}
     document.body.classList.toggle('cb-on',!!(c&&c.classList.contains('on')))}
   if(c) new MutationObserver(sync).observe(c,{attributes:true,attributeFilter:['class']});
   addEventListener('resize',sync); sync();
+})();
+</script>
+
+<script>
+(function(){
+  /* while an overlay dims the page, the browser's top bar (theme-color) is dimmed to match */
+  var R=document.documentElement, saved=null;
+  function metas(){return [].slice.call(document.querySelectorAll('meta[name="theme-color"]'))}
+  function dimColor(){
+    var c=(getComputedStyle(document.body).backgroundColor.match(/[0-9.]+/g)||[255]); var dark=parseFloat(c[0])<128;
+    return dark?'#111112':'#999999'}
+  function sync(){
+    var on=R.classList.contains('ov-lock');
+    if(on){var ms=metas(); if(!saved) saved=ms.map(function(m){return m.getAttribute('content')}); var c=dimColor(); ms.forEach(function(m){m.setAttribute('content',c)}); R.style.setProperty('--ov-dim',c)}
+    else if(saved){metas().forEach(function(m,i){if(saved[i]!=null) m.setAttribute('content',saved[i])}); saved=null}
+  }
+  new MutationObserver(function(){setTimeout(sync,0)}).observe(R,{attributes:true,attributeFilter:['class']});
 })();
 </script>
 </body>
