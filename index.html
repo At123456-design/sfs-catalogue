@@ -1044,6 +1044,9 @@ body.cb-on .list th{top:calc(var(--head) + 57px)!important}
 .sheet-media.photo{background:#fff}
 .ph-cr{position:absolute;right:12px;bottom:8px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.9);padding:2px 6px;border-radius:6px;text-decoration:none}
 .ph-cr:hover{text-decoration:underline}
+
+.badge.origin.flag-only{padding:5px 6px!important;gap:0!important;min-width:0}
+.badge.origin.flag-only .flag{width:20px;height:14px;border-radius:2px;display:block}
 </style>
 </head>
 <body>
@@ -1255,7 +1258,7 @@ body.cb-on .list th{top:calc(var(--head) + 57px)!important}
     var bn=s.brand?s.brand.en:'', lg=bn?brandLogo(bn):'';
     var badge=bn&&(!isB||lg)?'<span class="badge'+(lg?' logo':'')+'">'+(lg?'<img src="'+lg+'" alt="'+esc(bn)+'">':esc(bn))+'</span>':'';
     var top=tag||badge?'<span class="card-top">'+tag+badge+'</span>':'';
-    var org=s.origin?'<span class="badge origin">'+flag(s.origin.en)+esc(s.origin.en)+'</span>':'';
+    var org=s.origin&&FLAG[s.origin.en]?'<span class="badge origin flag-only" title="'+esc(s.origin.en)+'">'+flag(s.origin.en)+'<span class="vh">Origin: '+esc(s.origin.en)+'</span></span>':'';
     var meta=isB?(n?[n+(n===1?' product':' products')]:[]):[packOf(p),s.packing&&s.packing.en];
     meta=meta.filter(Boolean).join(' · ');
     var lab=grouped()?(p.tag?'New':''):(p.tag?'New · ':'')+(SHORT[p.k]||r.en)+(!isB&&p.cat&&p.sub?' · '+p.sub.en:'');
