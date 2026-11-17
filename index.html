@@ -1552,7 +1552,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
 
 /* ---------- desktop: the backdrop alone dims the page. The header is not painted dim as well (that is only for phone browser bars), so the header and the page dim equally ---------- */
 @media (min-width:720px){
-  html.ov-lock #chromeGlass{background:var(--glass)!important;-webkit-backdrop-filter:saturate(1.8) blur(20px)!important;backdrop-filter:saturate(1.8) blur(20px)!important}
+  html.ov-lock #chromeGlass{background:var(--glass)!important;-webkit-backdrop-filter:saturate(1.8) blur(20px)!important;backdrop-filter:saturate(1.8) blur(20px)!important;box-shadow:0 1px 0 var(--line)!important}
   html.ov-lock #header{background-color:transparent!important}
   html.ov-lock #header>*,html[data-theme="dark"].ov-lock #header>*{opacity:1!important}
   html.ov-lock{background-color:var(--page)!important}
@@ -1572,17 +1572,32 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
 .cb-sort select:focus,.cb-sort select:focus-visible,.cb-search input:focus,.cb-search input:focus-visible{outline:none!important;box-shadow:none!important}
 .cb-sort:focus-within{outline-offset:2px}
 
-/* ---------- side list: the edge fades out where more rows are hidden above or below ---------- */
+/* ---------- side list: the rows (not the panel) fade out at an edge where more rows are hidden above or below ---------- */
 @media (min-width:1024px){
-  .side .cats{--ft:0px;--fb:0px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft),#000 calc(100% - var(--fb)),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 var(--ft),#000 calc(100% - var(--fb)),transparent 100%)}
-  .side .cats.more-up{--ft:40px}
-  .side .cats.more-down{--fb:40px}
+  .side .cats::before,.side .cats::after{content:"";display:block;position:sticky;left:0;height:44px;margin-inline:-8px;pointer-events:none;z-index:3;opacity:0;transition:opacity .2s}
+  .side .cats::before{top:-8px;margin-top:-8px;margin-bottom:-36px;background:linear-gradient(to bottom,var(--tint) 0,var(--tint) 12%,transparent 100%)}
+  .side .cats::after{bottom:-8px;margin-top:-36px;margin-bottom:-8px;background:linear-gradient(to top,var(--tint) 0,var(--tint) 12%,transparent 100%)}
+  .side .cats.more-up::before,.side .cats.more-down::after{opacity:1}
 }
 
 /* ---------- product card: brand logo top-left, add button top-right (owner, 18 Nov) ---------- */
 .card-wrap>.add{left:auto!important;right:4px!important}
 .card-media .card-top{justify-content:flex-start!important;left:12px!important;right:56px!important;text-align:left}
 .card-media .card-top .badge.logo{margin-left:0!important;margin-right:auto!important}
+
+/* ---------- desktop: an open drawer freezes the page exactly where it is. The page is not re-positioned (that is the phone technique), so the header, sticky group headers and the side list do not move or vanish ---------- */
+@media (min-width:720px){
+  html{scrollbar-gutter:stable}
+  html.ov-lock body{position:static!important;top:auto!important;width:auto!important;overflow:visible!important}
+  body{overflow-x:clip!important;overflow-y:visible!important}
+}
+
+/* ---------- the page heading (title, Arabic title, count) is always visible: it stays under the bar, and group headers stick below it. The bar no longer repeats it ---------- */
+.results>.toolbar{position:sticky;top:var(--stick-bar,105px);z-index:5;background:var(--page);margin:0 0 4px!important;padding:12px 0 8px;min-height:0}
+.results>.toolbar::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;background:linear-gradient(var(--page),transparent);pointer-events:none}
+body table.list thead th,body.cb-on table.list thead th{top:var(--stick-top,105px)!important;z-index:4!important}
+#cbT{visibility:hidden!important}
+body.cb-mob #cbT{display:none!important}
 </style>
 </head>
 <body>
@@ -2018,7 +2033,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   function cbCheck(){var hh=$('#header').offsetHeight, tr=tb.getBoundingClientRect(), pr=prodSec.getBoundingClientRect();
     var mob=innerWidth<720; document.body.classList.toggle('cb-mob',mob); var on=true||mob||(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
     if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); document.documentElement.style.scrollPaddingTop=on?(hh+cbar.offsetHeight+16)+'px':''; stickTop&&stickTop(); if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
-  function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
+  function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-bar',top+'px'); if(tb&&getComputedStyle(tb).position==='sticky') top+=Math.round(tb.getBoundingClientRect().height); d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
   addEventListener('scroll',cbCheck,{passive:true}); addEventListener('resize',stickTop); addEventListener('resize',cbCheck); 
   cq.addEventListener('input',function(){state.q=cq.value; q.value=cq.value; state.page=1; render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight+2; if(scrollY>y) scrollTo(0,y)});
   cSort.addEventListener('change',function(){selSort.value=cSort.value; selSort.dispatchEvent(new Event('change'))});
