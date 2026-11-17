@@ -1242,6 +1242,53 @@ body.cb-on #chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))}
 }
 html[data-theme="dark"] .qd-backdrop,.qd-backdrop{background:rgba(0,0,0,.4)!important}
 html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important}
+
+/* ---------- country of origin: flag + ISO 3166-1 alpha-2 code, everywhere ---------- */
+.o-cc{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;vertical-align:middle}
+.o-cc abbr{text-decoration:none;font-variant-numeric:tabular-nums;letter-spacing:.02em;font-weight:500}
+.o-cc .flag{vertical-align:0}
+.o-full{color:var(--muted)}
+/* every field states its own surface and ink: never the browser's system field colours */
+[data-qi],#qNote{background-color:var(--surface)!important;color:var(--ink)!important;-webkit-text-fill-color:var(--ink);caret-color:var(--deep)}
+:where(input:not([type=checkbox]):not([type=radio]):not([type=file]),select,textarea){background-color:var(--surface);color:var(--ink)}
+[data-qi]{-moz-appearance:textfield;appearance:textfield;border-radius:0}
+[data-qi]::-webkit-inner-spin-button,[data-qi]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.o-txt{font-size:12px;font-weight:600;letter-spacing:.02em}
+.fo-t:has(>.o-cc){display:flex!important;flex-direction:row!important;align-items:center;gap:8px;flex-wrap:wrap}
+.fo-t:has(>.o-cc) em{flex-basis:100%}
+
+/* ---------- one type scale: 12 caption · 13 secondary · 14 body and every control · 15 section · 19 title ---------- */
+:root{--fs-cap:12px;--fs-2:13px;--fs-body:14px;--fs-sec:15px;--fs-title:19px}
+.nav a,#hdrQuote,.cb-t,.pager button,.toolbar .fbtn,#seg button,#selSort,.cb-l,#cbar .cfb{font-size:var(--fs-body)!important}
+@media (hover:hover) and (pointer:fine) and (min-width:1024px){#q,#cq,#cSort,#fsq,.fp-s{font-size:var(--fs-body)!important}}
+@media (pointer:coarse),(hover:none),(max-width:1023px){html #selSort,html #cSort,html #q,html #cq,html #fsq{font-size:16px!important}}
+.cat b,.sub b{font-size:var(--fs-body)!important}
+.cat em,.sub em,.cat i,.sub i{font-size:var(--fs-2)!important}
+table td,td.l-name,td.l-brand,td.l-pack,td.l-origin,td.l-ar{font-size:var(--fs-body)!important}
+td.l-name small{font-size:var(--fs-cap)!important}
+table th{font-size:var(--fs-cap)!important}
+.o-cc abbr{font-size:inherit}
+
+/* ---------- motion: the bar and its glass move as one, on the compositor only (transform + opacity) ---------- */
+:root{--ease-out:cubic-bezier(.32,.72,0,1);--dur-bar:.32s}
+#chromeGlass{height:calc(var(--head-h,48px) + var(--cbar-h,56px))!important;transform:translate3d(0,calc(-1 * var(--cbar-h,56px)),0);transition:transform var(--dur-bar) var(--ease-out);will-change:transform;backface-visibility:hidden}
+body.cb-on #chromeGlass{transform:translate3d(0,0,0)}
+.cbar{transform:translate3d(0,-10px,0)!important;opacity:0;transition:transform var(--dur-bar) var(--ease-out),opacity .2s ease!important;will-change:transform,opacity}
+.cbar.on{transform:translate3d(0,0,0)!important;opacity:1}
+body.cb-mob #chromeGlass,body.cb-mob .cbar{transition:none!important}
+@media (prefers-reduced-motion:reduce){#chromeGlass,.cbar{transition:none!important}}
+
+/* ---------- brand colour from sfs.com.sa: #44A615. Every fill uses it in light and dark.
+   Text on the fill is dark ink (6.1:1); white on #44A615 is 3.1:1 and fails. Green text uses the darker step #2A6B0D (6.5:1 on white). ---------- */
+:root,html[data-theme="light"]{--green:#44A615;--deep:#2A6B0D;--soft:#E7F4E1;--soft-line:#B4DDA3;--fill:#44A615;--fill-hover:#55B826;--on-fill:#061302;--band:#2A6B0D}
+html[data-theme="dark"]{--green:#44A615;--deep:#7CCB5C;--soft:#1A3312;--soft-line:#34602A;--fill:#44A615;--fill-hover:#55B826;--on-fill:#061302;--band:#1B3A10}
+.btn-primary:hover{background:var(--fill-hover)!important}
+
+/* ---------- quote bar: parts inside one pill share one height and one inset ---------- */
+#qbar .qopen{padding:6px!important;gap:12px!important;align-items:center}
+#qbar .qopen .qbadge,#qbar .qopen .qbar-a{height:36px!important;min-height:36px;box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;border-radius:980px!important;font-size:14px!important;font-weight:600;line-height:1}
+#qbar .qopen .qbadge{min-width:36px!important;width:auto;padding:0 10px!important;font-variant-numeric:tabular-nums}
+#qbar .qopen .qbar-a{padding:0 16px!important}
 </style>
 </head>
 <body>
@@ -1437,8 +1484,27 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
     France:'<path fill="#0055A4" d="M0 0h8v12H0z"/><path fill="#fff" d="M8 0h8v12H8z"/><path fill="#EF4135" d="M16 0h8v12h-8z"/>',
     Netherlands:'<path fill="#AE1C28" d="M0 0h24v4H0z"/><path fill="#fff" d="M0 4h24v4H0z"/><path fill="#21468B" d="M0 8h24v4H0z"/>',
     Belgium:'<path fill="#1D1D1F" d="M0 0h8v12H0z"/><path fill="#FAE042" d="M8 0h8v12H8z"/><path fill="#ED2939" d="M16 0h8v12h-8z"/>',
-    Brazil:'<path fill="#009B3A" d="M0 0h24v12H0z"/><path fill="#FEDF00" d="M12 1.500 21.500 6 12 10.500 2.500 6z"/><circle cx="12" cy="6" r="2.600" fill="#002776"/>'
+    Brazil:'<path fill="#009B3A" d="M0 0h24v12H0z"/><path fill="#FEDF00" d="M12 1.500 21.500 6 12 10.500 2.500 6z"/><circle cx="12" cy="6" r="2.600" fill="#002776"/>',
+    'Egypt':'<path fill="#CE1126" d="M0 0h24v4H0z"/><path fill="#fff" d="M0 4h24v4H0z"/><path fill="#1D1D1F" d="M0 8h24v4H0z"/><path fill="#C09300" d="M10.8 4.6h2.4v2.8h-2.4z"/>',
+    'Australia':'<path fill="#012169" d="M0 0h24v12H0z"/><path stroke="#fff" stroke-width="1.4" d="M0 0l10 6M10 0L0 6"/><path stroke="#fff" stroke-width="2" d="M5 0v6M0 3h10"/><path stroke="#C8102E" stroke-width="1" d="M5 0v6M0 3h10"/><g fill="#fff"><circle cx="5" cy="9" r="1.2"/><circle cx="18" cy="2.4" r=".7"/><circle cx="21" cy="5" r=".7"/><circle cx="18" cy="9.6" r=".7"/><circle cx="15.5" cy="5.6" r=".7"/></g>',
+    'Hungary':'<path fill="#CE2939" d="M0 0h24v4H0z"/><path fill="#fff" d="M0 4h24v4H0z"/><path fill="#477050" d="M0 8h24v4H0z"/>',
+    'Malaysia':'<path fill="#fff" d="M0 0h24v12H0z"/><path fill="#CC0001" d="M0 0h24v1.7H0zM0 3.4h24v1.7H0zM0 6.9h24v1.7H0zM0 10.3h24V12H0z"/><path fill="#010066" d="M0 0h12v6.9H0z"/><circle cx="5" cy="3.4" r="2.2" fill="#FC0"/><circle cx="5.9" cy="3.4" r="1.8" fill="#010066"/><circle cx="8.4" cy="3.4" r="1" fill="#FC0"/>',
+    'Saudi Arabia':'<path fill="#006C35" d="M0 0h24v12H0z"/><path fill="#fff" d="M6 3.4h12v2.6H6zM7 8h10v.9H7z"/>',
+    'Italy':'<path fill="#009246" d="M0 0h8v12H0z"/><path fill="#fff" d="M8 0h8v12H8z"/><path fill="#CE2B37" d="M16 0h8v12h-8z"/>',
+    'Germany':'<path fill="#1D1D1F" d="M0 0h24v4H0z"/><path fill="#DD0000" d="M0 4h24v4H0z"/><path fill="#FFCE00" d="M0 8h24v4H0z"/>',
+    'Ireland':'<path fill="#169B62" d="M0 0h8v12H0z"/><path fill="#fff" d="M8 0h8v12H8z"/><path fill="#FF883E" d="M16 0h8v12h-8z"/>',
+    'Austria':'<path fill="#ED2939" d="M0 0h24v4H0z"/><path fill="#fff" d="M0 4h24v4H0z"/><path fill="#ED2939" d="M0 8h24v4H0z"/>',
+    'Poland':'<path fill="#fff" d="M0 0h24v6H0z"/><path fill="#DC143C" d="M0 6h24v6H0z"/>',
+    'Indonesia':'<path fill="#CE1126" d="M0 0h24v6H0z"/><path fill="#fff" d="M0 6h24v6H0z"/>',
+    'Thailand':'<path fill="#A51931" d="M0 0h24v12H0z"/><path fill="#fff" d="M0 2h24v8H0z"/><path fill="#2D2A4A" d="M0 4h24v4H0z"/>',
+    'UAE':'<path fill="#00732F" d="M0 0h24v4H0z"/><path fill="#fff" d="M0 4h24v4H0z"/><path fill="#1D1D1F" d="M0 8h24v4H0z"/><path fill="#F00" d="M0 0h6v12H0z"/>',
+    'Spain':'<path fill="#AA151B" d="M0 0h24v12H0z"/><path fill="#F1BF00" d="M0 3h24v6H0z"/>'
   };
+  FLAG['United Arab Emirates']=FLAG.UAE;
+  var CC={France:'FR',Netherlands:'NL',Belgium:'BE',Brazil:'BR',Egypt:'EG',Australia:'AU',Hungary:'HU',Malaysia:'MY','Saudi Arabia':'SA',Italy:'IT',Germany:'DE',Ireland:'IE',Austria:'AT',Poland:'PL',Indonesia:'ID',Thailand:'TH',UAE:'AE','United Arab Emirates':'AE',Spain:'ES',Turkey:'TR','United States':'US',USA:'US','United Kingdom':'GB',UK:'GB',India:'IN',China:'CN',Denmark:'DK',Switzerland:'CH','New Zealand':'NZ',Greece:'GR',Portugal:'PT',Jordan:'JO',Lebanon:'LB',Kuwait:'KW',Oman:'OM',Bahrain:'BH',Qatar:'QA',Vietnam:'VN',Philippines:'PH',Singapore:'SG',Canada:'CA',Mexico:'MX',Argentina:'AR',Ukraine:'UA','South Africa':'ZA',Japan:'JP','South Korea':'KR',Sweden:'SE',Norway:'NO',Finland:'FI'};
+  function cc(c){return CC[c]||String(c||'').replace(/[^A-Za-z]/g,'').slice(0,2).toUpperCase()}
+  function oShort(c){return c?'<span class="o-cc" title="'+esc(c)+'">'+flag(c)+'<abbr title="'+esc(c)+'">'+cc(c)+'</abbr></span>':''}
+
   function flag(c){return FLAG[c]?'<svg class="flag" viewBox="0 0 24 12" preserveAspectRatio="none" aria-hidden="true">'+FLAG[c]+'</svg>':''}
   function imgSrc(p){if(p.timg)return p.timg; if(typeof p.img==='string'&&p.img.indexOf('p:')===0)return (window.PIMG&&PIMG[p.img.slice(2)])||'img/p/'+p.img.slice(2)+'.webp'; return p.img===1?BUTTER:DATA.images[p.img]}
   function brandLogo(name){var b=DATA.brands&&DATA.brands[name]; return b&&b.logo?b.logo:''}
@@ -1455,7 +1521,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
     var bn=s.brand?s.brand.en:'', lg=bn?brandLogo(bn):'';
     var badge=bn&&(!isB||lg)?'<span class="badge'+(lg?' logo':'')+'">'+(lg?'<img src="'+lg+'" alt="'+esc(bn)+'">':esc(bn))+'</span>':'';
     var top=tag||badge?'<span class="card-top">'+tag+badge+'</span>':'';
-    var org=s.origin&&FLAG[s.origin.en]?'<span class="badge origin flag-only" title="'+esc(s.origin.en)+'">'+flag(s.origin.en)+'<span class="vh">Origin: '+esc(s.origin.en)+'</span></span>':'';
+    var org=s.origin?'<span class="badge origin flag-only" title="'+esc(s.origin.en)+'">'+(FLAG[s.origin.en]?flag(s.origin.en):'<b class="o-txt">'+cc(s.origin.en)+'</b>')+'<span class="vh">Origin: '+esc(s.origin.en)+'</span></span>':'';
     var meta=isB?(n?[n+(n===1?' product':' products')]:[]):[packOf(p),s.packing&&s.packing.en];
     meta=meta.filter(Boolean).join(' · ');
     var lab=grouped()?(p.tag?'New':''):(p.tag?'New · ':'')+(SHORT[p.k]||r.en)+(!isB&&p.cat&&p.sub?' · '+p.sub.en:'');
@@ -1479,7 +1545,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
         +'<td class="l-name"><a href="#'+p.id+'">'+esc(p.n.en)+(isB?' (brand range)':'')+'</a>'+ar('span',p.n.ar,'l-arm')+'<small>'+esc([bn,pack].filter(Boolean).join(' · '))+'</small></td>'
         +'<td class="l-ar" lang="ar" dir="rtl">'+esc(p.n.ar)+'</td>'
         +'<td class="l-brand">'+esc(bn)+'</td><td class="l-pack">'+esc(pack)+'</td>'
-        +'<td class="l-origin">'+(s.origin?flag(s.origin.en)+' '+esc(s.origin.en):'')+'</td><td class="l-q">'+addBtn(p)+'</td></tr>';
+        +'<td class="l-origin">'+(s.origin?oShort(s.origin.en):'')+'</td><td class="l-q">'+addBtn(p)+'</td></tr>';
     });
     return h+'</tbody></table>';
   }
@@ -1509,7 +1575,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
     if(withHead) h+='<h3 class="fp-h">'+F.label+' <span lang="ar" dir="rtl">'+F.ar+'</span></h3>';
     if(V.length>8) h+='<label class="vh" for="fs-'+f+'">Search '+F.label.toLowerCase()+'</label><input type="search" class="fp-s" id="fs-'+f+'" data-fs="'+f+'" placeholder="Search '+F.label.toLowerCase()+'s" autocomplete="off">';
     h+='<ul class="fp-list" data-fl="'+f+'">'+V.map(function(o){var dis=!o.n&&!o.on, ar=f==='sub'?subAr(o.v):'';
-      return '<li data-v="'+esc(o.v.toLowerCase())+'"><label class="fo'+(dis?' is-dis':'')+'"><input type="checkbox" data-f="'+f+'" value="'+esc(o.v)+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+esc(o.v)+(ar?'<em lang="ar" dir="rtl">'+esc(ar)+'</em>':'')+'</span><i>'+o.n+'</i></label></li>'}).join('')+'</ul>';
+      return '<li data-v="'+esc(o.v.toLowerCase())+'"><label class="fo'+(dis?' is-dis':'')+'"><input type="checkbox" data-f="'+f+'" value="'+esc(o.v)+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+(f==='origin'?oShort(o.v)+' <span class="o-full">':'<span>')+esc(o.v)+'</span>'+(ar?'<em lang="ar" dir="rtl">'+esc(ar)+'</em>':'')+'</span><i>'+o.n+'</i></label></li>'}).join('')+'</ul>';
     return '<section class="fp-sec">'+h+'</section>'}
   function drawFacetBtns(){var tot=0;
     $$('.fbtn').forEach(function(b){var f=b.dataset.facet, n=f==='all'?0:state[FACETS[f].key].length;
@@ -1539,7 +1605,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
       h+='<section class="acc-sec"><button type="button" class="acc" data-acc="'+f+'" aria-expanded="'+open+'" aria-controls="acc-'+f+'"><span class="acc-t">'+sc[1]+' <span lang="ar" dir="rtl">'+sc[2]+'</span></span><span class="acc-s'+(sum?' on':'')+'">'+esc(sum||(q?M.length+' match'+(M.length===1?'':'es'):'Any'))+'</span>'+CHEV+'</button><div class="acc-b" id="acc-'+f+'"'+(open?'':' hidden')+'><ul class="fp-list">'
         +M.map(function(o){var dis=!o.n&&!o.on;
           if(f==='range') return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="radio" name="fsrg" data-rg="1" value="'+o.v+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+esc(o.en)+'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em></span><i>'+o.n+'</i></label></li>';
-          return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="checkbox" data-f="'+f+'" value="'+esc(o.v)+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+esc(o.en)+(o.ar?'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em>':'')+'</span><i>'+o.n+'</i></label></li>'}).join('')+'</ul></div></section>'});
+          return '<li><label class="fo'+(dis?' is-dis':'')+'"><input type="checkbox" data-f="'+f+'" value="'+esc(o.v)+'"'+(o.on?' checked':'')+(dis?' disabled':'')+'><span class="fo-box" aria-hidden="true"></span><span class="fo-t">'+(f==='origin'?oShort(o.en)+' <span class="o-full">':'<span>')+esc(o.en)+'</span>'+(o.ar?'<em lang="ar" dir="rtl">'+esc(o.ar)+'</em>':'')+'</span><i>'+o.n+'</i></label></li>'}).join('')+'</ul></div></section>'});
     if(!any) h+='<p class="fs-none">No filters match “'+esc(FQ)+'”. <button type="button" class="link" id="fsqx">Clear search</button></p>';
     fpBody.innerHTML=h;
     var n=matches().length; $('#fpShow').textContent='Show '+n+(n===1?' product':' products');
@@ -1566,7 +1632,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
   function drawActive(){
     var a=[], r=rangeBy[state.range];
     if(r) a.push(['range',r.en]); state.subs.forEach(function(v){a.push(['sub:'+v,v])});
-    state.brands.forEach(function(v){a.push(['brand:'+v,'Brand: '+v])}); state.origins.forEach(function(v){a.push(['origin:'+v,'Origin: '+v])});
+    state.brands.forEach(function(v){a.push(['brand:'+v,'Brand: '+v])}); state.origins.forEach(function(v){a.push(['origin:'+v,'Origin: '+cc(v)])});
     if(state.q.trim()) a.push(['q','“'+state.q.trim()+'”']);
     actf.hidden=!a.length;
     actf.innerHTML=a.map(function(x){return '<button type="button" class="af" data-clear="'+esc(x[0])+'" aria-label="Remove filter '+esc(x[1])+'">'+esc(x[1])+' <span aria-hidden="true">×</span></button>'}).join('')+(a.length>1?'<button type="button" class="af-all" data-clear="all">Clear all</button>':'');
@@ -1796,7 +1862,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
   var brandOrigins={};ITEMS.forEach(function(p){var s=p.specs;if(p.kind!=='brand'&&s.brand&&s.origin){(brandOrigins[s.brand.en]=brandOrigins[s.brand.en]||{})[s.origin.en]=1}});
   $('#brandList').innerHTML=ITEMS.filter(function(p){return p.kind==='brand'}).sort(function(a,b){return a.n.en.localeCompare(b.n.en)}).map(function(p){
     var lg=brandLogo(p.n.en), os=Object.keys(brandOrigins[p.n.en]||{});
-    var fl=os.map(function(c){return FLAG[c]?'<span class="b-flag" title="'+esc(c)+'">'+flag(c)+'<span class="vh">'+esc(c)+'</span></span>':'<span class="b-flag txt" title="'+esc(c)+'">'+esc({Egypt:'EG',Australia:'AU',Hungary:'HU',Malaysia:'MY','Saudi Arabia':'SA'}[c]||c.slice(0,2).toUpperCase())+'<span class="vh"> '+esc(c)+'</span></span>'}).join('');
+    var fl=os.map(function(c){return FLAG[c]?'<span class="b-flag" title="'+esc(c)+'">'+flag(c)+'<span class="vh">'+esc(c)+'</span></span>':'<span class="b-flag txt" title="'+esc(c)+'">'+esc(cc(c))+'<span class="vh"> '+esc(c)+'</span></span>'}).join('');
     return '<li><a href="#'+p.id+'"><span class="b-logo">'+(lg?'<img src="'+lg+'" alt="" loading="lazy">':'<span class="b-mono" aria-hidden="true">'+esc(p.n.en.replace(/[^A-Za-z]/g,'').slice(0,2))+'</span>')+'</span><b>'+esc(p.n.en)+'</b>'+(fl?'<span class="b-flags">'+fl+'</span>':'')+'</a></li>'}).join('');
 
   var bl=$('#brandList'), bt=$('#btrack'), bAll=$('#brandAll'), bcar=$('#bcar');
@@ -1924,7 +1990,7 @@ html.ov-lock #chromeGlass{background:var(--ov-dim,#999)!important;-webkit-backdr
 (function(){
   var g=document.createElement('div'); g.id='chromeGlass'; g.setAttribute('aria-hidden','true'); document.body.insertBefore(g,document.body.firstChild);
   var h=document.getElementById('header'), c=document.getElementById('cbar'), R=document.documentElement;
-  function sync(){if(h){R.style.setProperty('--head-h',h.offsetHeight+'px'); g.style.height=''; if(!document.body.classList.contains('cb-on')) g.style.height=h.offsetHeight+'px'} if(c) R.style.setProperty('--cbar-h',c.offsetHeight+'px');
+  function sync(){if(h){R.style.setProperty('--head-h',h.offsetHeight+'px');} if(c) R.style.setProperty('--cbar-h',c.offsetHeight+'px');
     document.body.classList.toggle('cb-on',!!(c&&c.classList.contains('on')))}
   if(c) new MutationObserver(sync).observe(c,{attributes:true,attributeFilter:['class']});
   addEventListener('resize',sync); sync();
