@@ -1378,6 +1378,64 @@ html.ov-lock{background-color:var(--surface)!important}
   .fpop .fp-back,.fpop .fp-panel,.qd .qd-backdrop,.qd .qd-panel,.sheet .sheet-backdrop,.sheet .sheet-panel{animation:none!important}
   #chromeGlass,html,#header,#header>*{transition:none!important}
 }
+
+/* ---------- animated icons: filter morphs to a close cross while open; sort arrow and bars play on use ---------- */
+.fx path{vector-effect:non-scaling-stroke;stroke-width:2px;transition:transform .42s cubic-bezier(.32,.72,0,1),opacity .2s ease}
+.fx .f1{transform:translate(12px,6.5px) rotate(0deg) scaleX(1)}
+.fx .f2{transform:translate(12px,12px) rotate(0deg) scaleX(.62)}
+.fx .f3{transform:translate(12px,17.5px) rotate(0deg) scaleX(.26)}
+.cfb[aria-expanded="true"] .fx .f1{transform:translate(12px,12px) rotate(225deg) scaleX(.95)}
+.cfb[aria-expanded="true"] .fx .f2{transform:translate(12px,12px) rotate(90deg) scaleX(0);opacity:0}
+.cfb[aria-expanded="true"] .fx .f3{transform:translate(12px,12px) rotate(135deg) scaleX(.95)}
+.sx{transition:transform .36s cubic-bezier(.32,.72,0,1)}
+.cb-sort.desc .sx{transform:scaleY(-1)}
+.sx .s-b{transform-box:fill-box;transform-origin:left center}
+@keyframes sArrow{0%{transform:translateY(0);opacity:1}38%{transform:translateY(13px);opacity:0}39%{transform:translateY(-13px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes sBar{0%{transform:scaleX(1)}45%{transform:scaleX(.55)}100%{transform:scaleX(1)}}
+.sx{overflow:hidden}
+.cb-sort.go .s-ar{animation:sArrow .6s cubic-bezier(.45,0,.2,1) both}
+.cb-sort.go .s-b{animation:sBar .42s cubic-bezier(.32,.72,0,1) both}
+.cb-sort.go .b1{animation-delay:.02s}.cb-sort.go .b2{animation-delay:.08s}.cb-sort.go .b3{animation-delay:.14s}.cb-sort.go .b4{animation-delay:.2s}
+/* view toggle: list rows (a dot and a line) break into a 3 x 3 grid of dots, and back */
+.vx path{vector-effect:non-scaling-stroke;stroke-width:2.4px;transition:transform .44s cubic-bezier(.32,.72,0,1)}
+.vx .r1{transform:translateY(6px)}.vx .r2{transform:translateY(12px)}.vx .r3{transform:translateY(18px)}
+.vx .v0{transform:translateX(4.5px) scaleX(.01)}
+.vx .v1{transform:translateX(12px) scaleX(3)}
+.vx .v2{transform:translateX(17px) scaleX(3)}
+.vx .r2 .v2{transform:translateX(16px) scaleX(2)}
+.to-grid .vx .v0{transform:translateX(5px) scaleX(.01)}
+.to-grid .vx .v1{transform:translateX(12px) scaleX(.01)}
+.to-grid .vx .v2,.to-grid .vx .r2 .v2{transform:translateX(19px) scaleX(.01)}
+.vx .r2 path{transition-delay:.05s}.vx .r3 path{transition-delay:.1s}
+@media (prefers-reduced-motion:reduce){.vx path{transition:none!important}.fx path,.sx{transition:none!important}.cb-sort.go .s-ar,.cb-sort.go .s-b{animation:none!important}}
+
+/* ---------- appearance button: one icon that morphs. Light = sun, Dark = crescent moon, Auto (system) = half-filled disc ---------- */
+.tm{overflow:visible}
+.tm .tm-core,.tm .tm-rays,.tm .tm-ring{transform-box:view-box;transform-origin:12px 12px}
+.tm .tm-core,.tm .tm-rays,.tm .tm-ring,.tm .tm-cut,.tm .tm-half{transition:transform .5s cubic-bezier(.32,.72,0,1),opacity .3s ease}
+/* light (default) */
+.tm .tm-core{transform:scale(.62)}
+.tm .tm-rays{transform:rotate(0deg) scale(1);opacity:1}
+.tm .tm-ring{opacity:0;transform:scale(.62)}
+.tm .tm-cut{transform:translate(16px,-16px)}
+.tm .tm-half{transform:translateX(16px)}
+/* dark */
+html[data-theme-mode="dark"] .tm .tm-core{transform:scale(1.08)}
+html[data-theme-mode="dark"] .tm .tm-rays{transform:rotate(-90deg) scale(.2);opacity:0}
+html[data-theme-mode="dark"] .tm .tm-cut{transform:translate(4.6px,-3.6px)}
+/* auto / system */
+html[data-theme-mode="system"] .tm .tm-core{transform:scale(1)}
+html[data-theme-mode="system"] .tm .tm-rays{transform:rotate(90deg) scale(.2);opacity:0}
+html[data-theme-mode="system"] .tm .tm-ring{opacity:1;transform:scale(1)}
+html[data-theme-mode="system"] .tm .tm-half{transform:translateX(0)}
+@media (prefers-reduced-motion:reduce){.tm *{transition:none!important}}
+
+/* ---------- filter drawer at every width: head fixed, list scrolls, actions pinned to the bottom ---------- */
+.fpop.sheet-mode .fp-panel{display:flex!important;flex-direction:column}
+.fpop.sheet-mode .fp-head,.fpop.sheet-mode .fp-foot{flex:none}
+.fpop.sheet-mode .fp-body{flex:1 1 auto;min-height:0;overflow:auto;max-height:none!important;overscroll-behavior:contain}
+.fpop.sheet-mode .fp-foot{margin-top:auto;display:flex;gap:12px;align-items:center}
+.fpop.sheet-mode .fp-foot .btn{height:44px;min-height:44px;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -1476,7 +1534,7 @@ html.ov-lock{background-color:var(--surface)!important}
   <div class="fp-body" id="fpBody"></div>
   <div class="fp-foot"><button type="button" class="btn btn-quiet" id="fpClear">Clear</button><button type="button" class="btn btn-primary" id="fpShow" data-fclose>Show results</button></div>
 </div></div>
-<div class="cbar" id="cbar" aria-label="Search, filter and sort" role="region" inert><div class="cb-in"><div class="cb-s" id="cbS"><span class="cb-si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><label class="vh" for="cq">Search products and brands</label><input type="search" id="cq" placeholder="Search products and brands" autocomplete="off"><button type="button" class="cb-ic cb-sx" id="cbSx" aria-label="Close search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><button type="button" class="cb-ic cb-sopen" id="cbSo" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><p class="cb-t" id="cbT" aria-hidden="true"></p><button type="button" class="fbtn cfb" data-facet="all" aria-haspopup="dialog" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="cb-l">Filters</span><span class="fn" hidden></span></button><label class="cb-sort"><span class="vh">Sort</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></svg><select id="cSort"></select></label><button type="button" class="cb-ic" id="cbView" aria-label="Switch to list view"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></button></div></div>
+<div class="cbar" id="cbar" aria-label="Search, filter and sort" role="region" inert><div class="cb-in"><div class="cb-s" id="cbS"><span class="cb-si"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><label class="vh" for="cq">Search products and brands</label><input type="search" id="cq" placeholder="Search products and brands" autocomplete="off"><button type="button" class="cb-ic cb-sx" id="cbSx" aria-label="Close search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><button type="button" class="cb-ic cb-sopen" id="cbSo" aria-label="Search"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><p class="cb-t" id="cbT" aria-hidden="true"></p><button type="button" class="fbtn cfb" data-facet="all" aria-haspopup="dialog" aria-expanded="false"><svg class="fx" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><path class="f1" d="M-8 0H8"/><path class="f2" d="M-8 0H8"/><path class="f3" d="M-8 0H8"/></svg><span class="cb-l">Filters</span><span class="fn" hidden></span></button><label class="cb-sort"><span class="vh">Sort</span><svg class="sx" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="s-ar"><path d="M6 4.5v14.5M2.5 15.5 6 19l3.5-3.5"/></g><path class="s-b b1" d="M12.5 6h3"/><path class="s-b b2" d="M12.5 10h5.5"/><path class="s-b b3" d="M12.5 14h8"/><path class="s-b b4" d="M12.5 18h10"/></svg><select id="cSort"></select></label><button type="button" class="cb-ic" id="cbView" aria-label="Switch to list view"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg></button></div></div>
 <div class="qd ai" id="ai" role="dialog" aria-modal="true" aria-labelledby="aiT" hidden><div class="qd-backdrop" data-aiclose></div><div class="qd-panel"><div class="qd-head"><h2 id="aiT">Add item <span lang="ar" dir="rtl">إضافة صنف</span></h2><button type="button" class="qd-x" data-aiclose aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div><form class="qd-body af-form" id="aiForm" novalidate><div class="af-sum" id="afSum" role="alert" hidden></div><div class="af-f" data-f="en"><label for="af-en">Name (English) <span lang="ar" dir="rtl">الاسم بالإنجليزية</span></label><input id="af-en" name="en" required aria-required="true" autocomplete="off"><p class="af-err" id="afe-en" hidden></p></div><div class="af-f" data-f="ar"><label for="af-ar">Name (Arabic) <span lang="ar" dir="rtl">الاسم بالعربية</span></label><input id="af-ar" name="ar" required aria-required="true" dir="rtl" lang="ar" autocomplete="off"><p class="af-err" id="afe-ar" hidden></p></div><div class="af-f" data-f="k"><label for="af-k">Category <span lang="ar" dir="rtl">الفئة</span></label><select id="af-k" name="k" required aria-required="true"></select><p class="af-err" id="afe-k" hidden></p></div><div class="af-f" data-f="sub"><label for="af-sub">Sub-category <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">الفئة الفرعية</span></label><p class="af-hint" id="afh-sub">Pick one or type a new one</p><input id="af-sub" name="sub" aria-describedby="afh-sub" list="afl-sub" autocomplete="off"><p class="af-err" id="afe-sub" hidden></p></div><div class="af-f" data-f="brand"><label for="af-brand">Brand <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">العلامة التجارية</span></label><input id="af-brand" name="brand" list="afl-brand" autocomplete="off"><p class="af-err" id="afe-brand" hidden></p></div><div class="af-f" data-f="code"><label for="af-code">Item code <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">رمز الصنف</span></label><p class="af-hint" id="afh-code">8 digits, e.g. 10000152</p><input id="af-code" name="code" aria-describedby="afh-code" inputmode="numeric" autocomplete="off"><p class="af-err" id="afe-code" hidden></p></div><div class="af-f" data-f="barcode"><label for="af-barcode">Barcode <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">الباركود</span></label><input id="af-barcode" name="barcode" inputmode="numeric" autocomplete="off"><p class="af-err" id="afe-barcode" hidden></p></div><div class="af-f" data-f="pack"><label for="af-pack">Pack size <span lang="ar" dir="rtl">حجم العبوة</span></label><p class="af-hint" id="afh-pack">e.g. 12×1 KG</p><input id="af-pack" name="pack" required aria-required="true" aria-describedby="afh-pack" autocomplete="off"><p class="af-err" id="afe-pack" hidden></p></div><div class="af-f" data-f="packing"><label for="af-packing">Packing <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">التعبئة</span></label><p class="af-hint" id="afh-packing">e.g. Carton, Bag, Tin</p><input id="af-packing" name="packing" aria-describedby="afh-packing" autocomplete="off"><p class="af-err" id="afe-packing" hidden></p></div><div class="af-f" data-f="origin"><label for="af-origin">Origin <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">بلد المنشأ</span></label><input id="af-origin" name="origin" list="afl-origin" autocomplete="off"><p class="af-err" id="afe-origin" hidden></p></div><div class="af-f" data-f="weight"><label for="af-weight">Net weight <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">الوزن الصافي</span></label><input id="af-weight" name="weight" autocomplete="off"><p class="af-err" id="afe-weight" hidden></p></div><div class="af-f" data-f="shelf"><label for="af-shelf">Shelf life <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">مدة الصلاحية</span></label><p class="af-hint" id="afh-shelf">e.g. 12 months</p><input id="af-shelf" name="shelf" aria-describedby="afh-shelf" autocomplete="off"><p class="af-err" id="afe-shelf" hidden></p></div><div class="af-f" data-f="storage"><label for="af-storage">Storage <span class="af-opt">(optional)</span> <span lang="ar" dir="rtl">التخزين</span></label><p class="af-hint" id="afh-storage">e.g. Store frozen at −18 °C</p><input id="af-storage" name="storage" aria-describedby="afh-storage" autocomplete="off"><p class="af-err" id="afe-storage" hidden></p></div><div class="af-f"><label for="af-desc"><span>Notes <span class="af-opt">(optional)</span></span><span lang="ar" dir="rtl">ملاحظات</span></label><textarea id="af-desc" name="desc" rows="3"></textarea></div><div class="af-f"><span class="af-l" id="af-phl"><span>Photo <span class="af-opt">(optional)</span></span><span lang="ar" dir="rtl">الصورة</span></span><div class="af-ph"><span class="af-prev" id="afPrev" aria-hidden="true"></span><label class="btn btn-ghost btn-sm af-pick">Choose photo<input type="file" id="af-photo" accept="image/*" aria-labelledby="af-phl"></label><button type="button" class="btn btn-quiet btn-sm" id="afPhX" hidden>Remove</button></div></div><datalist id="afl-sub"></datalist><datalist id="afl-brand"></datalist><datalist id="afl-origin"></datalist></form><div class="qd-foot"><p class="qd-fine">Saved items appear for everyone straight away. Only editors can add, edit or delete.</p><div class="qd-acts"><button type="button" class="btn btn-ghost" data-aiclose>Cancel</button><button type="submit" form="aiForm" class="btn btn-primary" id="afSave">Save item</button></div></div></div></div>
 <div class="qbar" id="qbar" hidden><button type="button" class="qopen" aria-haspopup="dialog"><span class="qbadge" data-qn>0</span><span class="qbar-t">in your quote list</span><span class="qbar-a">Review and send</span></button></div>
 <div class="qd" id="qd" role="dialog" aria-modal="true" aria-labelledby="qdT" hidden>
@@ -1806,7 +1864,7 @@ html.ov-lock{background-color:var(--surface)!important}
   var cbar=$('#cbar'), cq=$('#cq'), cSort=$('#cSort'), tb=$('.toolbar'), prodSec=$('#products'), cbView=$('#cbView');
   var GRIDI='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>', LISTI='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>';
   function syncCbar(){cSort.innerHTML=selSort.innerHTML.replace(' id="sortDef"',''); cSort.value=selSort.value; if(document.activeElement!==cq) cq.value=state.q;
-    var isL=state.view==='list'; cbView.innerHTML=isL?GRIDI:LISTI; cbView.setAttribute('aria-label',isL?'Switch to grid view':'Switch to list view');
+    var isL=state.view==='list'; if(!cbView.querySelector('.vx')) cbView.innerHTML='<svg class="vx" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><g class="vr r1"><path class="v0" d="M-1 0H1"/><path class="v1" d="M-1 0H1"/><path class="v2" d="M-1 0H1"/></g><g class="vr r2"><path class="v0" d="M-1 0H1"/><path class="v1" d="M-1 0H1"/><path class="v2" d="M-1 0H1"/></g><g class="vr r3"><path class="v0" d="M-1 0H1"/><path class="v1" d="M-1 0H1"/><path class="v2" d="M-1 0H1"/></g></svg>'; cbView.classList.toggle('to-grid',isL); cbView.setAttribute('aria-label',isL?'Switch to grid view':'Switch to list view');
     var r=rangeBy[state.range]; $('#cbT').textContent=(r?r.en:'All products')+' · '+tbCount.textContent}
   function cbCheck(){var hh=$('#header').offsetHeight, tr=tb.getBoundingClientRect(), pr=prodSec.getBoundingClientRect();
     var mob=innerWidth<720; document.body.classList.toggle('cb-mob',mob); var on=mob||(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
@@ -1897,7 +1955,7 @@ html.ov-lock{background-color:var(--surface)!important}
   var TM_LBL={system:'Auto',light:'Light',dark:'Dark'}, mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
   function tmGet(){try{return localStorage.getItem('sfs-theme')||'system'}catch(e){return 'system'}}
   function tmApply(m){var d=m==='dark'||(m==='system'&&mq&&mq.matches); document.documentElement.setAttribute('data-theme',d?'dark':'light'); document.documentElement.setAttribute('data-theme-mode',m);
-    var b=$('#themeBtn'); if(b){b.innerHTML=TM_ICON[m]; b.setAttribute('aria-label','Appearance: '+TM_LBL[m]+'. Change appearance'); b.title='Appearance: '+TM_LBL[m]}
+    var b=$('#themeBtn'); if(b){if(!b.querySelector('.tm')) b.innerHTML='<svg class="tm" viewBox="0 0 24 24" fill="none" aria-hidden="true"><defs><mask id="tmMask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/><circle class="tm-cut" cx="12" cy="12" r="6.2" fill="#000"/><rect class="tm-half" x="12" y="0" width="14" height="24" fill="#000"/></mask></defs><circle class="tm-core" cx="12" cy="12" r="7" fill="currentColor" mask="url(#tmMask)"/><circle class="tm-ring" cx="12" cy="12" r="7" stroke="currentColor" stroke-width="2"/><g class="tm-rays" fill="currentColor"><circle cx="12" cy="2.8" r="1.3"/><circle cx="19.97" cy="7.4" r="1.3"/><circle cx="19.97" cy="16.6" r="1.3"/><circle cx="12" cy="21.2" r="1.3"/><circle cx="4.03" cy="16.6" r="1.3"/><circle cx="4.03" cy="7.4" r="1.3"/></g></svg>'; b.setAttribute('aria-label','Appearance: '+TM_LBL[m]+'. Change appearance'); b.title='Appearance: '+TM_LBL[m]}
     $$('[data-tm]').forEach(function(x){x.setAttribute('aria-pressed',x.dataset.tm===m)})}
   function tmSet(m){try{localStorage.setItem('sfs-theme',m)}catch(e){} tmApply(m)}
   $('#themeBtn').addEventListener('click',function(){var o=['system','light','dark'], m=tmGet(); tmSet(o[(o.indexOf(m)+1)%3])});
@@ -2131,6 +2189,21 @@ html.ov-lock{background-color:var(--surface)!important}
         } else {el.classList.remove('closing'); proto.set.call(el,false)}
       }});
   });
+})();
+</script>
+
+<script>
+(function(){
+  var lab=document.querySelector('.cb-sort'), sel=document.getElementById('cSort'), main=document.getElementById('selSort'); if(!lab||!sel) return;
+  function play(){lab.classList.remove('go'); void lab.offsetWidth; lab.classList.add('go')}
+  function dir(){lab.classList.toggle('desc',(sel.value||(main&&main.value))==='za')}
+  lab.addEventListener('animationend',function(e){if(e.animationName==='sBar'&&e.target.classList.contains('b4')) lab.classList.remove('go')});
+  sel.addEventListener('change',function(){dir(); play()});
+  if(main) main.addEventListener('change',function(){setTimeout(dir,0)});
+  lab.addEventListener('pointerdown',play);
+  lab.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse') play()});
+  sel.addEventListener('focus',function(){if(sel.matches(':focus-visible')) play()});
+  dir();
 })();
 </script>
 </body>
