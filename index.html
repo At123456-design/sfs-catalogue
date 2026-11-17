@@ -1159,9 +1159,20 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
 @media (max-width:719px){
   .fpop.sheet-mode .fp-panel{bottom:var(--vvb)!important;max-height:min(88vh,calc(var(--vvh) - 12px))!important;transition:bottom .2s ease,max-height .2s ease}
   html.kb-open .fpop.sheet-mode .fp-panel{border-radius:16px}
-  html.kb-open .fpop.sheet-mode .fp-foot{display:none}
 }
 @media (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-panel{transition:none!important}}
+
+/* ---------- phone filter sheet = full-height sheet (iOS large detent / Material full-screen sheet) ---------- */
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+@media (max-width:719px){
+  .fpop.sheet-mode .fp-panel{top:calc(var(--vvt) + max(env(safe-area-inset-top),10px))!important;bottom:var(--vvb)!important;height:auto!important;max-height:none!important;
+    display:flex;flex-direction:column;border-radius:14px 14px 0 0!important;animation:sheetUp .34s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+  .fpop.sheet-mode .fp-head,.fpop.sheet-mode .fp-foot{flex:none}
+  .fpop.sheet-mode .fp-body{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;max-height:none!important}
+  .fpop.sheet-mode .fp-back{background:rgba(0,0,0,.4)}
+  html.kb-open .fpop.sheet-mode .fp-foot{padding-bottom:10px}
+}
+@media (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-panel{animation:none!important}}
 </style>
 </head>
 <body>
