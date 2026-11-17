@@ -1190,6 +1190,14 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
   .fpop.sheet-mode .fp-panel:focus{outline:none}
 }
 @media (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-back,.fpop.sheet-mode.closing .fp-panel,.fpop.sheet-mode.closing .fp-back{animation:none!important}}
+
+/* ---------- keyboard covers the sheet; it never pushes or shrinks it (native behaviour) ---------- */
+@media (max-width:719px){
+  .fpop.sheet-mode .fp-panel{bottom:0!important;box-sizing:border-box;padding-bottom:var(--vvb);transition:padding-bottom .25s cubic-bezier(.32,.72,0,1)!important}
+}
+@media (max-width:719px) and (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-panel{transition:none!important}}
+.qd{top:0!important;height:100dvh!important;bottom:0!important}
+.qd .qd-panel{box-sizing:border-box;padding-bottom:var(--vvb)}
 </style>
 </head>
 <body>
