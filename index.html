@@ -1526,6 +1526,12 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   .side{max-height:var(--side-h,calc(100vh - var(--head) - var(--cbar-h,57px) - 32px))!important;min-height:0}
   .side .cats{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
 }
+
+/* ---------- sidebar is fixed, so scrolling never moves it; its grid cell clips it at the end of the list (no script lag) ---------- */
+@media (min-width:1024px){
+  .side-cell{align-self:stretch;min-width:0;clip-path:inset(-8px -24px 0 -24px)}
+  .side-cell>.side{position:fixed!important;top:var(--side-top,calc(var(--head) + var(--cbar-h,57px) + 16px))!important;width:256px;transition:none}
+}
 </style>
 </head>
 <body>
@@ -1556,7 +1562,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   <div class="wrap">
     <h1 class="vh" id="prodTitle">SFS products catalogue</h1>
     <div class="shop">
-      <aside class="side" aria-label="Search and categories">
+      <div class="side-cell"><aside class="side" aria-label="Search and categories">
         <div class="search" role="search">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500"/></svg>
           <label class="vh" for="q">Search products and brands, in English or Arabic</label>
@@ -1565,7 +1571,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
         </div>
         <div class="cats" id="cats" role="group" aria-label="Product categories"></div>
         <div class="chips" id="chips" role="group" aria-label="Product categories"></div>
-      </aside>
+      </aside></div>
       <div class="results">
         <div class="toolbar">
           <div><h3><span id="tbTitle">All products</span><span lang="ar" id="tbAr"></span></h3><p id="tbCount" role="status" aria-live="polite"></p></div>
@@ -1981,7 +1987,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
     if(d.weight) s.weight=V(d.weight); if(d.shelf) s.shelfLife=V(d.shelf);
     var subAr=''; (SUBS[r.key]||[]).forEach(function(x){if(x.en===d.sub)subAr=x.ar});
     var p={id:'team-'+id, team:id, kind:'product', k:r.key, n:{en:d.en,ar:d.ar}, tag:d.npd?{en:'NPD',ar:'منتج جديد'}:null, specs:s, created:d.created||0,
-      q:d.en+(d.brand?' ('+d.brand+')':''), alt:d.en+(d.brand?', '+d.brand:''), img:d.photo?'team':null, timg:d.photo||null};
+      q:d.en+(d.brand?' ('+d.brand+')':''), alt:d.en+(d.brand?', '+d.brand:''), img:d.photo?'team':(d.pimg||null), timg:d.photo||null};
     if(d.sub){p.cat=1; p.sub=V(d.sub,subAr)} if(d.desc) p.desc=V(d.desc,'');
     if(d.storage) p.storage=[V(d.storage,'')];
     p.brand=d.brand||''; p.hay=' '+norm([p.n.en,p.n.ar,d.brand,r.en,r.ar,d.sub,d.origin,d.code,d.pack,d.desc].filter(Boolean).join(' '));
@@ -1989,14 +1995,17 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   function addSub(p){var g=grp(p), L=SUBS[p.k]=SUBS[p.k]||[], f=null; L.forEach(function(x){if(x.en===g.en)f=x}); if(!f){f={en:g.en,ar:g.ar,n:0,o:L.length};L.push(f)} f.n++; subIdx[p.k+'|'+g.en]=f.o}
   function dropItem(id){var p=byId['team-'+id]; if(!p) return; var i=ITEMS.indexOf(p); if(i>-1)ITEMS.splice(i,1); delete byId[p.id]; count[p.k]--; count.all--;
     var L=SUBS[p.k]||[]; L.forEach(function(x){if(x.en===grp(p).en)x.n--}); delete TEAM[id]}
-  function putItem(id,d){dropItem(id); if(!d||!d.en||!rangeBy[d.k]) return; var p=toItem(id,d); p.i=ITEMS.length; ITEMS.push(p); byId[p.id]=p; count[p.k]++; count.all++; addSub(p); TEAM[id]=d}
-  var ovSrc=null;
+  function putItem(id,d){dropItem(id); if(d&&d.replaces&&byId[d.replaces]&&!byId[d.replaces].team) removeStatic(byId[d.replaces]); if(!d||d.deleted||!d.en||!rangeBy[d.k]) return; var p=toItem(id,d); p.i=ITEMS.length; ITEMS.push(p); byId[p.id]=p; count[p.k]++; count.all++; addSub(p); TEAM[id]=d}
+  var ovSrc=null, aiPimg=null;
+  var LOCAL={}; try{LOCAL=JSON.parse(localStorage.getItem('sfs-local-items')||'{}')||{}}catch(e){LOCAL={}}
+  function saveLocal(){try{localStorage.setItem('sfs-local-items',JSON.stringify(LOCAL)); return true}catch(e){return false}}
+  function useDb(){return !!(teamDb&&canAdd)}
   function staticToD(p){var s=p.specs||{}, g=function(o){return o&&o.en?o.en:''}; var d={en:p.n.en,ar:p.n.ar,k:p.k,created:Date.now()};
     var m={sub:(p.cat&&p.sub)?p.sub.en:'',brand:g(s.brand),code:g(s.code),barcode:g(s.barcode),pack:g(s.pack),packing:g(s.packing),origin:g(s.origin),weight:g(s.weight),shelf:g(s.shelfLife),storage:p.storage&&p.storage[0]?g(p.storage[0]):'',desc:g(p.desc)};
-    Object.keys(m).forEach(function(f){if(m[f])d[f]=m[f]}); if(p.img){try{d.photo=imgSrc(p)}catch(x){}} return d}
+    Object.keys(m).forEach(function(f){if(m[f])d[f]=m[f]}); if(p.img){if(typeof p.img==='string'&&p.img.indexOf('p:')===0) d.pimg=p.img; else{try{d.photo=imgSrc(p)}catch(x){}}} d.replaces=p.id; return d}
   function removeStatic(p){var i=ITEMS.indexOf(p); if(i<0) return; ITEMS.splice(i,1); delete byId[p.id]; count[p.k]--; count.all--; var gn=grp(p).en; (SUBS[p.k]||[]).forEach(function(x){if(x.en===gn)x.n--}); if(QUOTE[p.id]){delete QUOTE[p.id]; saveQ()}}
   function ed(){var p=byId[shown]; var e=$('#sheetEd'); if(!e) return; var on=!!(p&&p.kind!=='brand'); e.hidden=!on;
-    if(on){var lab=e.querySelector('span'); if(p.team){var dt=new Date(p.created||Date.now()); lab.innerHTML=(canAdd?'Added by an editor ':'Added for review ')+'<b id="sheetEdD">'+dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</b>'} else lab.innerHTML='Catalogue item <b id="sheetEdD">review: changes stay on this device</b>';
+    if(on){var lab=e.querySelector('span'); if(p.team){var dt=new Date(p.created||Date.now()); lab.innerHTML=(canAdd?'Added by an editor ':'Added for review ')+'<b id="sheetEdD">'+dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+'</b>'} else lab.innerHTML='Catalogue item <b id="sheetEdD">'+(useDb()?'changes are saved for everyone':'changes are saved on this device')+'</b>';
       var db=$('#sheetDel'); delete db.dataset.arm; db.textContent='Delete'}}
   function fillLists(k){var subs=(SUBS[k]||[]).map(function(x){return x.en});
     $('#afl-sub').innerHTML=subs.map(function(v){return '<option value="'+esc(v)+'">'}).join('');
@@ -2008,7 +2017,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
     $('#af-k').innerHTML='<option value="">Choose a category</option>'+RANGES.map(function(r){return '<option value="'+r.key+'">'+esc(r.en)+'</option>'}).join('');
     var d=aiEdit?TEAM[aiEdit]:{k:state.range!=='all'?state.range:'', sub:state.subs.length===1?state.subs[0]:''};
     ['en','ar','k','sub','brand','code','barcode','pack','packing','origin','weight','shelf','storage','desc'].forEach(function(f){var el=aiForm.elements[f]; if(el&&d[f]!=null) el.value=d[f]});
-    setPhoto(aiEdit?d.photo:null); fillLists($('#af-k').value);
+    setPhoto(aiEdit?d.photo:null); aiPimg=null; if(aiEdit&&d.pimg&&!d.photo){setPhoto(imgSrc({img:d.pimg})); aiPimg=[d.pimg,aiPhoto]} fillLists($('#af-k').value);
     if(aiForm.elements.npd) aiForm.elements.npd.checked=!!(d&&d.npd); $('#aiT').firstChild.nodeValue=aiEdit?'Edit item ':'Add new item '; $('#afSave').textContent=aiEdit?'Save changes':'Save item';
     if(shown) closeSheet(); ai.hidden=false; outside.concat([sheet]).forEach(function(el){el.inert=true}); document.documentElement.style.overflow='hidden'; $('#af-en').focus()}
   function closeAI(){ai.hidden=true; outside.concat([sheet]).forEach(function(el){el.inert=false}); document.documentElement.style.overflow=''; if(aiLast&&document.contains(aiLast)) aiLast.focus({preventScroll:true})}
@@ -2025,8 +2034,9 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
     sum.hidden=true; return v}
   async function save(e){e.preventDefault(); var v=check(); if(!v) return; var b=$('#afSave'); b.disabled=true; b.textContent='Saving…';
     var id=aiEdit||('i'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)), d={en:v.en,ar:v.ar,k:v.k,created:aiEdit&&TEAM[aiEdit]?TEAM[aiEdit].created:Date.now(),updated:Date.now()};
-    ['sub','brand','code','barcode','pack','packing','origin','weight','shelf','storage','desc'].forEach(function(f){if(v[f])d[f]=v[f]}); if(aiPhoto) d.photo=aiPhoto; if(aiForm.elements.npd&&aiForm.elements.npd.checked) d.npd=true;
-    if(ovSrc||!teamDb||!canAdd){if(ovSrc){removeStatic(ovSrc); ovSrc=null} putItem(id,d); render(); closeAI(); location.hash='team-'+id; b.disabled=false; b.textContent='Save item'; return}
+    ['sub','brand','code','barcode','pack','packing','origin','weight','shelf','storage','desc'].forEach(function(f){if(v[f])d[f]=v[f]}); if(aiPimg&&aiPhoto===aiPimg[1]) d.pimg=aiPimg[0]; else if(aiPhoto) d.photo=aiPhoto; if(aiForm.elements.npd&&aiForm.elements.npd.checked) d.npd=true; if(ovSrc) d.replaces=ovSrc.id; else if(aiEdit&&TEAM[aiEdit]&&TEAM[aiEdit].replaces) d.replaces=TEAM[aiEdit].replaces;
+    if(!useDb()){LOCAL[id]=d; if(!saveLocal()){delete LOCAL[id]; var sm=$('#afSum'); sm.hidden=false; sm.innerHTML='<p>This device has no room left for saved changes. Delete some edited items, or use a smaller photo.</p>'; b.disabled=false; b.textContent='Save item'; return} ovSrc=null; putItem(id,d); render(); closeAI(); location.hash='team-'+id; b.disabled=false; b.textContent='Save item'; return}
+    ovSrc=null;
     try{await teamDb.collection('catalog').doc(id).set(d); putItem(id,d); render(); closeAI(); location.hash='team-'+id}
     catch(x){var sum=$('#afSum'); sum.hidden=false; sum.innerHTML='<p>'+(x&&x.code==='quota_exceeded'?'The catalogue is full. Delete some added items, then try again.':x&&x.code==='invalid_argument'?'You don’t have permission to add items. Ask the owner to make you an Editor.':'Couldn’t save. Check your connection and try again.')+'</p>'}
     b.disabled=false; b.textContent=aiEdit?'Save changes':'Save item'}
@@ -2040,9 +2050,11 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   $('#addItem').addEventListener('click',function(){openAI(null)});
   $('#sheetEdit').addEventListener('click',function(){var p=byId[shown]; if(p) openAI(p)});
   $('#sheetDel').addEventListener('click',async function(){var b=this, p=byId[shown]; if(!p||p.kind==='brand') return; if(!b.dataset.arm){b.dataset.arm=1; b.textContent='Tap again to delete'; setTimeout(function(){delete b.dataset.arm; b.textContent='Delete'},3000); return}
-    if(!p.team){closeSheet(); removeStatic(p); render(); return}
-    if(!teamDb||!canAdd){delete QUOTE[p.id]; saveQ(); closeSheet(); dropItem(p.team); render(); return}
+    if(!p.team){var did='del'+p.id.replace(/[^A-Za-z0-9]/g,''), dd={deleted:true,replaces:p.id}; if(useDb()){try{await teamDb.collection('catalog').doc(did).set(dd)}catch(x){b.textContent='Couldn’t delete'; return}} else{LOCAL[did]=dd; saveLocal()} closeSheet(); removeStatic(p); render(); return}
+    if(!useDb()||LOCAL[p.team]){var rp=TEAM[p.team]&&TEAM[p.team].replaces; if(rp) LOCAL[p.team]={deleted:true,replaces:rp}; else delete LOCAL[p.team]; saveLocal(); delete QUOTE[p.id]; saveQ(); closeSheet(); dropItem(p.team); render(); return}
+    if(TEAM[p.team]&&TEAM[p.team].replaces){try{await teamDb.collection('catalog').doc(p.team).set({deleted:true,replaces:TEAM[p.team].replaces}); delete QUOTE[p.id]; saveQ(); dropItem(p.team); closeSheet(); render()}catch(x){b.textContent='Couldn’t delete'} return}
     try{await teamDb.collection('catalog').doc(p.team).delete(); delete QUOTE[p.id]; saveQ(); dropItem(p.team); closeSheet(); render()}catch(x){b.textContent='Couldn’t delete'}});
+  Object.keys(LOCAL).forEach(function(id){try{putItem(id,LOCAL[id])}catch(e){}}); if(Object.keys(LOCAL).length){Object.keys(QUOTE).forEach(function(id){if(!byId[id])delete QUOTE[id]}); render()}
   (async function(){if(!window.claude||!claude.use) return; var user=null, db=null; try{user=await claude.use('user'); db=await claude.use('db')}catch(x){} if(!db) return; teamDb=db;
     canAdd=!!(user&&((user.canEdit&&user.canEdit())||(user.isOwner&&user.isOwner()))); $('#addItem').hidden=!canAdd; document.body.classList.toggle('can-add',canAdd);
     db.collection('catalog').onSnapshot(function(snap){snap.docChanges().forEach(function(c){if(c.type==='removed')dropItem(c.doc.id); else putItem(c.doc.id,c.doc.data())}); Object.keys(QUOTE).forEach(function(id){if(!byId[id])delete QUOTE[id]}); render(); ed()},function(){});
@@ -2313,7 +2325,7 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   o.hidden=false;
   a.addEventListener('click',function(){o.click()});
   var ai=document.getElementById('ai'), head=ai&&ai.querySelector('.qd-head,.qd-top,header')||null;
-  if(ai){var n=document.createElement('p'); n.className='ai-rev'; n.setAttribute('role','note'); n.textContent='Review mode: an item you add here shows on this device only and is not saved for other people. Editors’ items are saved for everyone.';
+  if(ai){var n=document.createElement('p'); n.className='ai-rev'; n.setAttribute('role','note'); n.textContent='Review mode: what you add or change is saved on this device only, not for other people. Editors’ changes are saved for everyone.';
     var panel=ai.querySelector('.qd-panel'); if(head&&head.parentNode) head.parentNode.insertBefore(n,head.nextSibling); else if(panel) panel.insertBefore(n,panel.children[1]||null)}
 })();
 </script>
@@ -2329,6 +2341,17 @@ html[data-theme="dark"] .spec-logo{filter:drop-shadow(0 0 .8px rgba(255,255,255,
   addEventListener('scroll',q,{passive:true}); addEventListener('resize',q);
   new MutationObserver(q).observe(document.getElementById('grid')||sec,{childList:true,subtree:false});
   fit(); setTimeout(fit,400);
+})();
+</script>
+
+<script>
+(function(){
+  var cell=document.querySelector('.side-cell'), R=document.documentElement; if(!cell) return;
+  function top(){ if(!matchMedia('(min-width:1024px)').matches){R.style.removeProperty('--side-top'); return}
+    var cs=getComputedStyle(R), pin=(parseFloat(cs.getPropertyValue('--head'))||48)+(parseFloat(cs.getPropertyValue('--cbar-h'))||57)+16;
+    var base=cell.getBoundingClientRect().top+scrollY;
+    R.style.setProperty('--side-top',Math.round(base-pin<=24?Math.max(base,pin):Math.max(pin,base-scrollY))+'px')}
+  addEventListener('resize',top); addEventListener('scroll',top,{passive:true}); top(); setTimeout(top,400);
 })();
 </script>
 </body>
