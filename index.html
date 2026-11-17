@@ -1315,6 +1315,69 @@ html[data-theme="dark"]{--green:#44A615;--deep:#7CCB5C;--soft:#1A3312;--soft-lin
 
 /* ---------- dark theme, lifted: dark grey instead of pure black (Material baseline #121212, Apple elevated greys). Layers step up evenly ---------- */
 html[data-theme="dark"]{--page:#17171A;--surface:#232326;--glass:rgba(35,35,38,.86);--tint:#303034;--tint-2:#3D3D42;--hair:#3A3A3F;--line:#4E4E54;--line-strong:#6A6A70;--dim:#A0A0A6;--muted:#B4B4BA;--soft:#213A18;--soft-line:#3A6A2E;--band:#22471A}
+
+/* ---------- one backdrop per theme, and the browser's top bar follows it ---------- */
+.qd-backdrop,.fp-back,.sheet-backdrop,.fpop.sheet-mode .fp-back{background:rgba(0,0,0,.4)!important}
+html[data-theme="dark"] .qd-backdrop,html[data-theme="dark"] .fp-back,html[data-theme="dark"] .sheet-backdrop,html[data-theme="dark"] .fpop.sheet-mode .fp-back{background:rgba(0,0,0,.6)!important}
+html{background-color:var(--surface)}
+html.ov-lock{background-color:var(--ov-dim,#999)!important}
+html.ov-lock #header{background-color:var(--ov-dim,#999)!important}
+html.ov-lock #header>*{opacity:.4}
+html[data-theme="dark"].ov-lock #header>*{opacity:.4}
+
+/* ---------- brand row: keeps moving; slows under the pointer, stops only for keyboard focus ---------- */
+.bcar:hover .btrack,.bcar:focus-within .btrack{animation-play-state:running!important}
+.bcar:has(:focus-visible) .btrack{animation-play-state:paused!important}
+
+/* ---------- fills use the SFS logo green (#5DBA5A) with dark ink on it (8:1); green text uses its darker step ---------- */
+:root,html[data-theme="light"]{--green:#5DBA5A;--deep:#2F6C2D;--soft:#E6F4E6;--soft-line:#B1DEB0;--fill:#5DBA5A;--fill-hover:#6FC56C;--on-fill:#0B1F05;--band:#2F6C2D}
+html[data-theme="dark"]{--green:#5DBA5A;--deep:#79C676;--soft:#1F3A1E;--soft-line:#376336;--fill:#5DBA5A;--fill-hover:#6FC56C;--on-fill:#0B1F05;--band:#22471F}
+
+/* ---------- one motion system for every overlay: backdrop fades, panel slides, top bar dims, all together ---------- */
+:root{--dur-in:.32s;--dur-out:.24s}
+@keyframes drawerIn{from{transform:translate3d(100%,0,0)}to{transform:none}}
+@keyframes drawerOut{from{transform:none}to{transform:translate3d(100%,0,0)}}
+@keyframes sheetOut{from{transform:translate3d(0,var(--drag,0px),0)}to{transform:translate3d(0,100%,0)}}
+#chromeGlass{transition:transform var(--dur-bar) var(--ease-out),background-color var(--dur-in) ease!important}
+html{transition:background-color var(--dur-in) ease}
+#header>*{transition:opacity var(--dur-in) ease}
+#header{transition:background-color var(--dur-in) ease}
+.fpop.sheet-mode .fp-back,.qd:not([hidden]) .qd-backdrop{animation:backIn var(--dur-in) ease both}
+.fpop.sheet-mode.closing .fp-back,.qd.closing .qd-backdrop{animation:backOut var(--dur-out) ease both!important}
+.qd.closing{pointer-events:none}
+@media (min-width:720px){
+  .fpop.sheet-mode .fp-panel,.qd:not([hidden]) .qd-panel{animation:drawerIn var(--dur-in) var(--ease-out) both}
+  .fpop.sheet-mode.closing .fp-panel,.qd.closing .qd-panel{animation:drawerOut var(--dur-out) var(--ease-out) both!important}
+}
+@media (max-width:719px){
+  .qd:not([hidden]) .qd-panel{animation:sheetUp var(--dur-in) var(--ease-out) both}
+  .qd.closing .qd-panel{animation:sheetOut var(--dur-out) var(--ease-out) both!important}
+  .fpop.sheet-mode.closing .fp-panel{animation:sheetOut var(--dur-out) var(--ease-out) both!important}
+}
+/* ---------- quote bar: room for its shadow (a transformed, tight wrapper crops it on iOS) ---------- */
+.qbar{left:0!important;right:0!important;transform:none!important;display:flex;justify-content:center;padding:24px 24px 32px;bottom:calc(max(16px,env(safe-area-inset-bottom)) - 32px)!important;pointer-events:none;overflow:visible}
+.qbar[hidden]{display:none!important}
+.qbar button{pointer-events:auto}
+html[data-theme="dark"] .qbar button{background:rgba(84,84,90,.96)!important;box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.1)!important}
+html[data-theme="dark"] .qbar .qbar-a{background:#F5F5F7!important;color:#1D1D1F!important}
+html[data-theme="dark"] #qbar .qbadge{background:var(--fill)!important;color:var(--on-fill)!important}
+
+/* ---------- iOS Safari tints its top and bottom bars from the fixed element at each edge. Give it one on purpose ---------- */
+#topTint,#botTint{position:fixed;left:0;right:0;height:12px;pointer-events:none;z-index:2147483000;display:none}
+#topTint{top:0;background:var(--ov-dim,#999)}
+#botTint{bottom:0;background:var(--surface)}
+@media (max-width:719px){
+  html:has(#fpop.sheet-mode:not([hidden]):not(.closing)) #topTint{display:block}
+  html.ov-lock #botTint{display:block}
+}
+html.ov-lock{background-color:var(--surface)!important}
+.sheet.open .sheet-backdrop{animation:backIn var(--dur-in) ease both}
+.sheet.open .sheet-panel{animation:popIn var(--dur-in) var(--ease-out) both}
+@keyframes popIn{from{opacity:0;transform:translate3d(0,16px,0) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .fpop .fp-back,.fpop .fp-panel,.qd .qd-backdrop,.qd .qd-panel,.sheet .sheet-backdrop,.sheet .sheet-panel{animation:none!important}
+  #chromeGlass,html,#header,#header>*{transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -1647,7 +1710,7 @@ html[data-theme="dark"]{--page:#17171A;--surface:#232326;--glass:rgba(35,35,38,.
     var first=$('input',fpBody); if(fpop.classList.contains('sheet-mode')&&matchMedia('(max-width:719px)').matches){var P0=$('.fp-panel',fpop); P0.setAttribute('tabindex','-1'); P0.setAttribute('aria-modal','true'); P0.focus({preventScroll:true})} else if(first) first.focus({preventScroll:true})}
   function place(){var P=$('.fp-panel',fpop); if(fpop.classList.contains('sheet-mode')){P.style.top=P.style.left='';return}
     var r=fpBtn.getBoundingClientRect(), w=P.offsetWidth; P.style.top=(r.bottom+8)+'px'; P.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+'px'}
-  function closePop(back){if(fpop.hidden) return; var P1=$('.fp-panel',fpop); if(fpop.classList.contains('sheet-mode')&&matchMedia('(max-width:719px)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&!fpop.classList.contains('closing')&&!window.__fpNow){fpop.classList.add('closing'); P1.style.transform=''; var done=false, fin=function(){if(done)return; done=true; window.__fpNow=true; try{closePop(back)}finally{window.__fpNow=false}}; P1.addEventListener('animationend',fin,{once:true}); setTimeout(fin,360); return} if(fpop.classList.contains('closing')&&!window.__fpNow) return; fpop.classList.remove('closing'); if(P1) P1.style.transform=''; fpop.hidden=true; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded','false')}); if(back!==false&&fpBtn) fpBtn.focus({preventScroll:true})}
+  function closePop(back){if(fpop.hidden) return; var P1=$('.fp-panel',fpop); if(fpop.classList.contains('sheet-mode')&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&!fpop.classList.contains('closing')&&!window.__fpNow){fpop.classList.add('closing'); P1.style.transform=''; var done=false, fin=function(){if(done)return; done=true; window.__fpNow=true; try{closePop(back)}finally{window.__fpNow=false}}; P1.addEventListener('animationend',fin,{once:true}); setTimeout(fin,360); return} if(fpop.classList.contains('closing')&&!window.__fpNow) return; fpop.classList.remove('closing'); if(P1) P1.style.transform=''; fpop.hidden=true; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded','false')}); if(back!==false&&fpBtn) fpBtn.focus({preventScroll:true})}
   function updateCounts(){
     var c={all:0}; ITEMS.forEach(function(p){if(pass(p,'range')){c.all++; c[p.k]=(c[p.k]||0)+1}});
     $$('[data-range]',cats).concat($$('[data-range]',chips)).forEach(function(b){var i=b.querySelector('i'); if(i) i.textContent=c[b.dataset.range]||0; b.classList.toggle('zero',!c[b.dataset.range])});
@@ -1889,7 +1952,7 @@ html[data-theme="dark"]{--page:#17171A;--surface:#232326;--glass:rgba(35,35,38,.
   $('#brandList').innerHTML=ITEMS.filter(function(p){return p.kind==='brand'}).sort(function(a,b){return a.n.en.localeCompare(b.n.en)}).map(function(p){
     var lg=brandLogo(p.n.en), os=Object.keys(brandOrigins[p.n.en]||{});
     var fl=os.map(function(c){return FLAG[c]?'<span class="b-flag" title="'+esc(c)+'">'+flag(c)+'<span class="vh">'+esc(c)+'</span></span>':'<span class="b-flag txt" title="'+esc(c)+'">'+esc(cc(c))+'<span class="vh"> '+esc(c)+'</span></span>'}).join('');
-    return '<li><a href="#'+p.id+'"><span class="b-logo">'+(lg?'<img src="'+lg+'" alt="" loading="lazy">':'<span class="b-mono" aria-hidden="true">'+esc(p.n.en.replace(/[^A-Za-z]/g,'').slice(0,2))+'</span>')+'</span><b>'+esc(p.n.en)+'</b>'+(fl?'<span class="b-flags">'+fl+'</span>':'')+'</a></li>'}).join('');
+    return '<li><a href="#'+p.id+'"><span class="b-logo">'+(lg?'<img src="'+lg+'" alt="" decoding="async">':'<span class="b-mono" aria-hidden="true">'+esc(p.n.en.replace(/[^A-Za-z]/g,'').slice(0,2))+'</span>')+'</span><b>'+esc(p.n.en)+'</b>'+(fl?'<span class="b-flags">'+fl+'</span>':'')+'</a></li>'}).join('');
 
   var bl=$('#brandList'), bt=$('#btrack'), bAll=$('#brandAll'), bcar=$('#bcar');
   bt.innerHTML='<ul class="bset">'+bl.innerHTML+'</ul><ul class="bset" aria-hidden="true" inert>'+bl.innerHTML+'</ul>';
@@ -1984,7 +2047,7 @@ html[data-theme="dark"]{--page:#17171A;--surface:#232326;--glass:rgba(35,35,38,.
   }
   if(vv){vv.addEventListener('resize',vvSync);vv.addEventListener('scroll',vvSync)} addEventListener('resize',vvSync); vvSync();
   var Y=0, locked=false, ids=['qd','ai','fpop'];
-  function isOpen(){return ids.some(function(i){var e=document.getElementById(i);return e&&!e.hidden&&(i!=='fpop'||e.classList.contains('sheet-mode'))})}
+  function isOpen(){return ids.some(function(i){var e=document.getElementById(i);return e&&!e.hidden&&!e.classList.contains('closing')&&(i!=='fpop'||e.classList.contains('sheet-mode'))})}
   function sync(){
     var o=isOpen();
     if(o&&!locked){Y=scrollY; document.body.style.top=(-Y)+'px'; R.classList.add('ov-lock'); locked=true}
@@ -2030,13 +2093,44 @@ html[data-theme="dark"]{--page:#17171A;--surface:#232326;--glass:rgba(35,35,38,.
   function metas(){return [].slice.call(document.querySelectorAll('meta[name="theme-color"]'))}
   function dimColor(){
     var c=(getComputedStyle(document.body).backgroundColor.match(/[0-9.]+/g)||[255]); var dark=parseFloat(c[0])<128;
-    return dark?'#151517':'#999999'}
+    return dark?'#0E0E0F':'#999999'}
   function sync(){
     var on=R.classList.contains('ov-lock');
     if(on){var ms=metas(); if(!saved) saved=ms.map(function(m){return m.getAttribute('content')}); var c=dimColor(); ms.forEach(function(m){m.setAttribute('content',c)}); R.style.setProperty('--ov-dim',c)}
     else if(saved){metas().forEach(function(m,i){if(saved[i]!=null) m.setAttribute('content',saved[i])}); saved=null}
   }
   new MutationObserver(function(){setTimeout(sync,0)}).observe(R,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+
+<script>
+(function(){
+  var car=document.querySelector('.bcar'), tr=document.querySelector('.btrack'); if(!car||!tr||!tr.getAnimations) return;
+  function rate(r){tr.getAnimations().forEach(function(a){try{a.updatePlaybackRate?a.updatePlaybackRate(r):(a.playbackRate=r)}catch(e){}})}
+  car.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse') rate(.25)});
+  car.addEventListener('pointerleave',function(){rate(1)});
+})();
+</script>
+
+<script>
+(function(){
+  ['topTint','botTint'].forEach(function(id){var e=document.createElement('div'); e.id=id; e.setAttribute('aria-hidden','true'); document.body.appendChild(e)});
+  /* drawers that the app closes with el.hidden=true get an exit animation first */
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)');
+  var proto=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+  ['qd','ai'].forEach(function(id){
+    var el=document.getElementById(id); if(!el||!proto) return; var timer=null;
+    Object.defineProperty(el,'hidden',{configurable:true,
+      get:function(){return proto.get.call(el)||el.classList.contains('closing')},
+      set:function(v){
+        clearTimeout(timer);
+        if(v){
+          if(proto.get.call(el)||reduce.matches){el.classList.remove('closing'); proto.set.call(el,true); return}
+          el.classList.add('closing');
+          timer=setTimeout(function(){proto.set.call(el,true); el.classList.remove('closing')},250);
+        } else {el.classList.remove('closing'); proto.set.call(el,false)}
+      }});
+  });
 })();
 </script>
 </body>
