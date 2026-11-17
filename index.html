@@ -1173,6 +1173,23 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
   html.kb-open .fpop.sheet-mode .fp-foot{padding-bottom:10px}
 }
 @media (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-panel{animation:none!important}}
+
+/* ---------- phone sheet: grab handle, swipe down to close, slide-down exit (compared with Outlook compose) ---------- */
+@keyframes sheetDown{from{transform:translateY(var(--drag,0px))}to{transform:translateY(100%)}}
+@keyframes backIn{from{opacity:0}to{opacity:1}}
+@keyframes backOut{from{opacity:1}to{opacity:0}}
+.fp-grab{display:none}
+@media (max-width:719px){
+  .fpop.sheet-mode .fp-grab{display:block;position:absolute;top:6px;left:50%;width:36px;height:5px;margin-left:-18px;border-radius:3px;background:#C7C7CC;z-index:2}
+  html[data-theme="dark"] .fpop.sheet-mode .fp-grab{background:#636366}
+  .fpop.sheet-mode .fp-head{position:relative;padding-top:18px!important;touch-action:none}
+  .fpop.sheet-mode .fp-back{animation:backIn .3s ease}
+  .fpop.sheet-mode.closing .fp-back{animation:backOut .26s ease forwards}
+  .fpop.sheet-mode.closing .fp-panel{animation:sheetDown .26s cubic-bezier(.32,.72,0,1) forwards!important}
+  .fpop.sheet-mode .fp-panel.dragging{animation:none!important;transition:none!important}
+  .fpop.sheet-mode .fp-panel:focus{outline:none}
+}
+@media (prefers-reduced-motion:reduce){.fpop.sheet-mode .fp-back,.fpop.sheet-mode.closing .fp-panel,.fpop.sheet-mode.closing .fp-back{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1483,10 +1500,10 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
   function filterList(inp){var t2=inp.value.trim().toLowerCase(); $$('li',$('[data-fl="'+inp.dataset.fs+'"]',fpop)).forEach(function(li){li.hidden=t2&&li.dataset.v.indexOf(t2)<0})}
   function openPop(b){var f=b.dataset.facet; if(!fpop.hidden&&fpFacet===f){closePop();return} fpFacet=f; fpBtn=b; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded',x===b)});
     fpop.hidden=false; fpop.classList.toggle('sheet-mode',f==='all'||innerWidth<720); drawPop(); place();
-    var first=$('input',fpBody); if(first) first.focus({preventScroll:true})}
+    var first=$('input',fpBody); if(fpop.classList.contains('sheet-mode')&&matchMedia('(max-width:719px)').matches){var P0=$('.fp-panel',fpop); P0.setAttribute('tabindex','-1'); P0.setAttribute('aria-modal','true'); P0.focus({preventScroll:true})} else if(first) first.focus({preventScroll:true})}
   function place(){var P=$('.fp-panel',fpop); if(fpop.classList.contains('sheet-mode')){P.style.top=P.style.left='';return}
     var r=fpBtn.getBoundingClientRect(), w=P.offsetWidth; P.style.top=(r.bottom+8)+'px'; P.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left))+'px'}
-  function closePop(back){if(fpop.hidden) return; fpop.hidden=true; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded','false')}); if(back!==false&&fpBtn) fpBtn.focus({preventScroll:true})}
+  function closePop(back){if(fpop.hidden) return; var P1=$('.fp-panel',fpop); if(fpop.classList.contains('sheet-mode')&&matchMedia('(max-width:719px)').matches&&!matchMedia('(prefers-reduced-motion:reduce)').matches&&!fpop.classList.contains('closing')&&!window.__fpNow){fpop.classList.add('closing'); P1.style.transform=''; var done=false, fin=function(){if(done)return; done=true; window.__fpNow=true; try{closePop(back)}finally{window.__fpNow=false}}; P1.addEventListener('animationend',fin,{once:true}); setTimeout(fin,360); return} if(fpop.classList.contains('closing')&&!window.__fpNow) return; fpop.classList.remove('closing'); if(P1) P1.style.transform=''; fpop.hidden=true; $$('.fbtn').forEach(function(x){x.setAttribute('aria-expanded','false')}); if(back!==false&&fpBtn) fpBtn.focus({preventScroll:true})}
   function updateCounts(){
     var c={all:0}; ITEMS.forEach(function(p){if(pass(p,'range')){c.all++; c[p.k]=(c[p.k]||0)+1}});
     $$('[data-range]',cats).concat($$('[data-range]',chips)).forEach(function(b){var i=b.querySelector('i'); if(i) i.textContent=c[b.dataset.range]||0; b.classList.toggle('zero',!c[b.dataset.range])});
@@ -1825,6 +1842,22 @@ html.ov-lock body{position:fixed;left:0;right:0;width:100%}
   var mo=new MutationObserver(sync);
   function watch(){ids.forEach(function(i){var e=document.getElementById(i); if(e) mo.observe(e,{attributes:true,attributeFilter:['hidden','class']})}); sync()}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',watch); else watch();
+})();
+</script>
+
+<script>
+(function(){
+  var fpop=document.getElementById('fpop'); if(!fpop) return;
+  var P=fpop.querySelector('.fp-panel'), H=fpop.querySelector('.fp-head'); if(!P||!H) return;
+  var g=document.createElement('span'); g.className='fp-grab'; g.setAttribute('aria-hidden','true'); H.insertBefore(g,H.firstChild);
+  var y0=null,dy=0,t0=0;
+  function phone(){return fpop.classList.contains('sheet-mode')&&matchMedia('(max-width:719px)').matches}
+  H.addEventListener('pointerdown',function(e){if(!phone()||e.target.closest('button,input,a'))return; y0=e.clientY; dy=0; t0=Date.now(); P.classList.add('dragging'); H.setPointerCapture(e.pointerId)});
+  H.addEventListener('pointermove',function(e){if(y0===null)return; dy=Math.max(0,e.clientY-y0); P.style.transform='translateY('+dy+'px)'});
+  function end(){if(y0===null)return; y0=null; P.classList.remove('dragging'); var v=dy/Math.max(1,Date.now()-t0);
+    if(dy>110||v>0.6){P.style.setProperty('--drag',dy+'px'); var x=fpop.querySelector('button[data-fclose]'); if(x) x.click(); else fpop.hidden=true}
+    else {P.style.transition='transform .25s cubic-bezier(.32,.72,0,1)'; P.style.transform=''; setTimeout(function(){P.style.transition=''},260)}}
+  H.addEventListener('pointerup',end); H.addEventListener('pointercancel',end);
 })();
 </script>
 </body>
