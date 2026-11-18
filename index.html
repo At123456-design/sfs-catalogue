@@ -1792,6 +1792,17 @@ body.cb-mob #cbar.s-open .cb-s{margin-inline:0!important}
 html.kb-typing .qd .qd-body{padding-bottom:max(calc(16px + var(--vvb) - var(--vvf)),46vh)}
 html.kb-typing .fpop.sheet-mode .fp-body{padding-bottom:max(calc(var(--vvb) - var(--vvf)),46vh)}
 html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :focus) .fpop.sheet-mode .fp-body{padding-bottom:16px}
+
+/* ---------- the heading has no margin below it (the space is inside it), so the first group header already sits where it sticks and never shifts on the first scroll ---------- */
+.results>.toolbar{margin:0!important;padding-bottom:12px!important}
+
+/* ---------- phone: one dim layer. The header is already painted in the dim colour (the browser bar takes its colour from it), so the backdrop starts below the header instead of darkening it a second time ---------- */
+@media (max-width:719px){
+  .fpop.sheet-mode .fp-back,#sheet.sheet .sheet-backdrop{background:linear-gradient(to bottom,transparent 0,transparent var(--head-h,48px),rgba(0,0,0,.4) var(--head-h,48px))!important}
+  /* no shadow from the sheet onto the strip above it: the shadow read as a second, darker band under the browser bar */
+  .fpop.sheet-mode .fp-panel,#sheet.sheet .sheet-panel{box-shadow:none!important}
+  html[data-theme="dark"] .fpop.sheet-mode .fp-back,html[data-theme="dark"] #sheet.sheet .sheet-backdrop{background:linear-gradient(to bottom,transparent 0,transparent var(--head-h,48px),rgba(0,0,0,.6) var(--head-h,48px))!important}
+}
 </style>
 </head>
 <body>
@@ -2230,7 +2241,7 @@ html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :fo
   function cbCheck(){var hh=$('#header').offsetHeight, tr=tb.getBoundingClientRect(), pr=prodSec.getBoundingClientRect();
     var mob=innerWidth<720; document.body.classList.toggle('cb-mob',mob); var on=true||mob||(tr.bottom<hh+4&&pr.bottom>hh+120)||cbar.classList.contains('s-open')||document.activeElement===cq||(!fpop.hidden&&fpBtn&&!!fpBtn.closest('#cbar')); cbar.style.top=hh+'px';
     if(on!==cbar.classList.contains('on')){cbar.classList.toggle('on',on); cbar.inert=!on; document.body.classList.toggle('cb-on',on); document.documentElement.style.scrollPaddingTop=on?(hh+cbar.offsetHeight+16)+'px':''; stickTop&&stickTop(); if(!on){cbar.classList.remove('s-open'); if(!fpop.hidden&&fpBtn&&fpBtn.closest('#cbar')) closePop(false)}}}
-  function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-bar',top+'px'); if(tb&&getComputedStyle(tb).position==='sticky'){var gp=Math.max(0,Math.min(200,Math.round(tb.parentElement.getBoundingClientRect().top+window.scrollY-top))); d.setProperty('--stick-gap',gp+'px'); top+=gp+Math.round(tb.getBoundingClientRect().height)} d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
+  function stickTop(){var hh=$('#header').offsetHeight, on=cbar.classList.contains('on'), top=hh+(on?cbar.offsetHeight:0), th=$('table.list thead'); var d=document.documentElement.style; d.setProperty('--stick-bar',top+'px'); d.setProperty('--head-h',hh+'px'); if(tb&&getComputedStyle(tb).position==='sticky'){var gp=Math.max(0,Math.min(200,Math.round((tb.parentElement.getBoundingClientRect().top+window.scrollY-top)*100)/100)); d.setProperty('--stick-gap',gp+'px'); top=Math.round((top+gp+tb.getBoundingClientRect().height)*100)/100} d.setProperty('--stick-top',top+'px'); d.setProperty('--stick-list',(top+(th&&th.offsetParent&&getComputedStyle(th).display!=='none'?th.offsetHeight:0))+'px')}
   addEventListener('scroll',cbCheck,{passive:true}); addEventListener('resize',stickTop); addEventListener('resize',cbCheck); 
   cq.addEventListener('input',function(){state.q=cq.value; q.value=cq.value; state.page=1; render(); var y=prodSec.offsetTop+tb.offsetTop+tb.offsetHeight-$('#header').offsetHeight+2; if(scrollY>y) scrollTo(0,y)});
   cSort.addEventListener('change',function(){selSort.value=cSort.value; selSort.dispatchEvent(new Event('change'))});
@@ -2286,7 +2297,7 @@ html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :fo
     ['en','ar','k','sub','brand','code','barcode','pack','packing','origin','weight','shelf','storage','desc'].forEach(function(f){var el=aiForm.elements[f]; if(el&&d[f]!=null) el.value=d[f]});
     setPhoto(aiEdit?d.photo:null); aiPimg=null; if(aiEdit&&d.pimg&&!d.photo){setPhoto(imgSrc({img:d.pimg})); aiPimg=[d.pimg,aiPhoto]} fillLists($('#af-k').value);
     if(aiForm.elements.npd) aiForm.elements.npd.checked=!!(d&&d.npd); $('#aiT').firstChild.nodeValue=aiEdit?'Edit item ':'Add new item '; $('#afSave').textContent=aiEdit?'Save changes':'Save item';
-    if(shown) closeSheet(); ai.hidden=false; outside.concat([sheet]).forEach(function(el){el.inert=true}); document.documentElement.style.overflow='hidden'; var aiP=$('.qd-panel',ai); if(matchMedia('(hover:none),(pointer:coarse)').matches&&aiP){aiP.tabIndex=-1; aiP.focus({preventScroll:true})} else $('#af-en').focus(); if(aiP){aiP.classList.remove('in'); setTimeout(function(){if(!ai.hidden) aiP.classList.add('in')},480)}}
+    if(shown) closeSheet(); ai.hidden=false; outside.concat([sheet]).forEach(function(el){el.inert=true}); document.documentElement.style.overflow='hidden'; var aiP=$('.qd-panel',ai); aiForm.scrollTop=0; requestAnimationFrame(function(){aiForm.scrollTop=0}); if(matchMedia('(hover:none),(pointer:coarse)').matches&&aiP){aiP.tabIndex=-1; aiP.focus({preventScroll:true})} else $('#af-en').focus(); if(aiP){aiP.classList.remove('in'); setTimeout(function(){if(!ai.hidden) aiP.classList.add('in')},480)}}
   function closeAI(){ai.hidden=true; outside.concat([sheet]).forEach(function(el){el.inert=false}); document.documentElement.style.overflow=''; if(aiLast&&document.contains(aiLast)) aiLast.focus({preventScroll:true})}
   function err(f,msg){var w=$('[data-f="'+f+'"]',aiForm), e=$('#afe-'+f); if(!w||!e) return; w.classList.toggle('bad',!!msg); e.hidden=!msg; e.textContent=msg||''; var i=$('#af-'+f); if(i){if(msg)i.setAttribute('aria-invalid','true'); else i.removeAttribute('aria-invalid'); var db=[('afh-'+f),('afe-'+f)].filter(function(x){return document.getElementById(x)&&(x.indexOf('afe')<0||msg)}); i.setAttribute('aria-describedby',db.join(' '))}}
   function check(){var v={}, bad=[]; ['en','ar','k','sub','brand','code','barcode','pack','packing','origin','weight','shelf','storage','desc'].forEach(function(f){var el=aiForm.elements[f]; v[f]=el?String(el.value||'').trim():''});
@@ -2438,7 +2449,7 @@ html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :fo
     sheetScroll.innerHTML=sheetHTML(p); sheetScroll.scrollTop=0;
     $('#sheetQuote').href=mailto('Quote request: '+p.q); var sa=$('#sheetAdd'); sa.hidden=p.kind==='brand'; sa.dataset.id=p.id; syncSheetAdd();
     $('#sheetWa').href=WA+'?text='+encodeURIComponent('Hello SFS, I would like a quote for '+p.q+'.');
-    sheet.classList.add('open'); outside.forEach(function(el){el.inert=true});
+    sheet.classList.add('open'); [sheetScroll,$('.sheet-panel')].forEach(function(e){if(e) e.scrollTop=0}); outside.forEach(function(el){el.inert=true});
     document.documentElement.style.overflow='hidden';
     sheetScroll.focus({preventScroll:true});
   }
