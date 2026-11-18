@@ -1717,7 +1717,7 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
 
 /* ---------- phone quote list: the footer is one notes line and one row of actions, so the items get the room ---------- */
 @media (max-width:719px){
-  #qd .qd-foot{padding:10px 16px max(10px,env(safe-area-inset-bottom))!important;gap:8px!important}
+  #qd .qd-foot{padding:10px 20px max(12px,env(safe-area-inset-bottom))!important;gap:8px!important}
   #qd .qd-l{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   #qd #qNote{height:44px;min-height:44px;resize:none;padding:10px 12px;line-height:1.4;overflow:hidden;transition:height var(--dur-out,.24s) var(--ease-out,cubic-bezier(.32,.72,0,1))}
   #qd #qNote:focus,#qd #qNote:not(:placeholder-shown){height:84px;overflow:auto}
@@ -1747,7 +1747,7 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
 @media (prefers-reduced-motion:reduce){#bcar{overflow-x:auto!important}.bfade{display:none}}
 
 /* ---------- phone sheets: the strip that tints the browser's top bar is shorter than the gap above the sheet, so it can never cover the sheet's rounded top corners ---------- */
-#topTint{height:6px!important}
+#topTint,#botTint{height:6px!important}
 @media (max-width:719px){
   .sheet{padding-top:max(env(safe-area-inset-top),14px)!important}
   .sheet .sheet-panel{border-radius:16px 16px 0 0!important;overflow:hidden}
