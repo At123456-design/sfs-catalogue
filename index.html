@@ -1668,7 +1668,12 @@ html[data-theme="dark"] .ld-say span{color:#79C676}
 .sheet-media .sheet-blogo{position:absolute;top:14px;right:14px;left:auto;z-index:2;display:block;line-height:0;pointer-events:none}
 .sheet-media .sheet-blogo img,.sheet-media.photo .sheet-blogo img{position:static!important;inset:auto!important;display:block;width:auto!important;height:auto!important;max-height:30px!important;max-width:110px!important;aspect-ratio:auto!important;padding:0!important;background:none!important;border-radius:0!important;box-shadow:none!important;object-fit:contain!important;filter:drop-shadow(0 0 .6px rgba(255,255,255,.9)) drop-shadow(0 1px 1.5px rgba(0,0,0,.18))}
 html[data-theme="dark"] .sheet-media .sheet-blogo img{filter:drop-shadow(0 0 .8px rgba(255,255,255,.85)) drop-shadow(0 0 2px rgba(255,255,255,.35))}
-@media (max-width:719px){.sheet-media .sheet-blogo{right:68px;top:18px}}
+@media (max-width:719px){
+  .sheet-media .sheet-blogo{right:68px;top:19px}
+  /* the photo starts below the row that holds the logo and the close button, so nothing overlaps it */
+  .sheet-media.photo{padding-top:60px!important}
+  .sheet-media.photo>img{padding:0 16px 8px!important;max-height:156px!important}
+}
 
 /* ---------- the header is fixed like the toolbar under it, so the logo and header buttons cannot drift when the page rubber-bands or the browser bars move ---------- */
 #header.header,.header#header{position:fixed!important;top:0;left:0;right:0}
@@ -1697,6 +1702,49 @@ body.cb-mob #cbar .cb-s~*:not(#cbT){max-width:60px;transition:max-width var(--du
 body.cb-mob #cbar.s-open .cb-s~*:not(#cbT){display:inline-flex!important;max-width:0!important;min-width:0!important;width:0!important;margin-inline:0 -4px!important;padding:0!important;opacity:0;transform:translateX(28px);pointer-events:none;overflow:hidden}
 body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!important}
 @media (prefers-reduced-motion:reduce){body.cb-mob #cbar .cb-s,body.cb-mob #cbar .cb-s~*{transition:none!important}}
+
+/* ---------- quote list grouped by category ---------- */
+.ql-sec+.ql-sec{margin-top:16px}
+.ql-g{display:flex;align-items:center;gap:8px;margin:0;padding:8px 0;font-size:var(--fs-2,13px);font-weight:600;color:var(--muted);border-bottom:1px solid var(--hair);position:sticky;top:0;background:var(--surface);z-index:1}
+.ql-g .c-ic{width:16px;height:16px;flex:none}
+.ql-g .ql-gar{font-weight:500}
+.ql-g i{margin-inline-start:auto;font-style:normal;font-weight:500;font-variant-numeric:tabular-nums}
+
+/* ---------- group headers: the Arabic name stays whole. Beside the English when it fits, otherwise the whole Arabic name moves to the next line ---------- */
+.grp .g-sub,.gh .g-sub,.grp .g-cat,.gh .g-cat{display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:0;min-width:0;white-space:normal!important}
+.grp .g-sub span[lang],.gh .g-sub span[lang],.grp .g-cat span[lang],.gh .g-cat span[lang]{display:block!important;margin:0!important;min-width:0;max-width:100%}
+.grp .g-cat>.c-ic,.gh .g-cat>.c-ic{align-self:center;margin-inline-end:0}
+
+/* ---------- phone quote list: the footer is one notes line and one row of actions, so the items get the room ---------- */
+@media (max-width:719px){
+  #qd .qd-foot{padding:10px 16px max(10px,env(safe-area-inset-bottom))!important;gap:8px!important}
+  #qd .qd-l{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  #qd #qNote{height:44px;min-height:44px;resize:none;padding:10px 12px;line-height:1.4;overflow:hidden;transition:height var(--dur-out,.24s) var(--ease-out,cubic-bezier(.32,.72,0,1))}
+  #qd #qNote:focus,#qd #qNote:not(:placeholder-shown){height:84px;overflow:auto}
+  #qd .qd-acts{display:flex!important;align-items:center;gap:8px}
+  #qd #qMail{flex:1 1 auto;min-width:0;min-height:44px}
+  #qd #qWa,#qd #qCopy,#qd #qlClear{flex:none;width:44px;min-width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%;font-size:0!important;line-height:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line)!important;color:var(--ink)!important;background:var(--surface)}
+  #qd #qWa::before,#qd #qCopy::before,#qd #qlClear::before{content:"";width:22px;height:22px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  #qd #qWa{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3.5 20.5 5 16a8.5 8.5 0 1 1 3.2 3.1z%22/%3E%3Cpath d=%22M9 9.5c0 3 2.5 5.5 5.5 5.5%22/%3E%3C/svg%3E")}
+  #qd #qCopy{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect width=%2214%22 height=%2214%22 x=%228%22 y=%228%22 rx=%222%22 ry=%222%22/%3E%3Cpath d=%22M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2%22/%3E%3C/svg%3E")}
+  #qd #qCopy[data-st="Copied"]{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 12.5l4.500 4.500L19 7.500%22/%3E%3C/svg%3E");color:var(--deep)!important;border-color:var(--deep)!important}
+  #qd #qlClear{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10 11v6%22/%3E%3Cpath d=%22M14 11v6%22/%3E%3Cpath d=%22M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6%22/%3E%3Cpath d=%22M3 6h18%22/%3E%3Cpath d=%22M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2%22/%3E%3C/svg%3E")}
+  #qd #qlClear[data-arm]{width:auto;padding:0 14px!important;border-radius:999px;font-size:var(--fs-2,13px)!important;line-height:1;gap:6px;color:var(--error,#B3261E)!important;border-color:currentColor!important;white-space:nowrap}
+  #qd #qlClear[data-arm]::before{width:18px;height:18px}
+  #qd .qd-fine{display:none}
+  #qd .ql li{padding-top:10px!important;padding-bottom:10px!important}
+}
+
+/* ---------- brand row: moved by scrolling its own box (ordinary content the browser always paints), not by animating one very wide layer, which Safari can leave blank. Edge fades are overlays, not a mask ---------- */
+#bcar{position:relative;overflow:hidden!important;-webkit-mask-image:none!important;mask-image:none!important;scrollbar-width:none}
+#bcar::-webkit-scrollbar{display:none}
+#bcar .btrack{animation:none!important;transform:none!important;will-change:auto!important}
+#brands .wrap{position:relative}
+.bfade{position:absolute;bottom:0;width:56px;height:64px;pointer-events:none;z-index:1}
+.bfade.l{left:var(--gut,0);background:linear-gradient(90deg,var(--bfc,var(--tint)),transparent)}
+.bfade.r{right:var(--gut,0);background:linear-gradient(270deg,var(--bfc,var(--tint)),transparent)}
+#bcar[hidden]~.bfade,#bcar[hidden]+*+.bfade{display:none}
+@media (prefers-reduced-motion:reduce){#bcar{overflow-x:auto!important}.bfade{display:none}}
 </style>
 </head>
 <body>
@@ -2251,20 +2299,22 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
   var qbar=$('#qbar'), qd=$('#qd'), qdBody=$('#qdBody'), qNote=$('#qNote'), qLast=null;
   function toggleQ(id){if(QUOTE[id])delete QUOTE[id]; else QUOTE[id]=1; var on=!!QUOTE[id]; saveQ(); render(); $$('[data-add="'+id+'"]').forEach(function(b){b.classList.add(on?'just-on':'just-off')})}
   function syncSheetAdd(){var sa=$('#sheetAdd'), on=!!QUOTE[sa.dataset.id]; sa.setAttribute('aria-pressed',on); sa.textContent=on?'In quote list ✓':'Add to quote list'; sa.classList.toggle('on',on)}
-  function qText(){var L=qIds().map(function(id,i){var p=byId[id], s=p.specs; return (i+1)+'. '+p.n.en+(s.brand?' ('+s.brand.en+')':'')+(s.code?' · Item '+s.code.en:'')+(packOf(p)?' · '+packOf(p):'')+' · Qty '+QUOTE[id]});
-    return 'Hello SFS, please quote the following items:\n\n'+L.join('\n')+(qNote.value.trim()?'\n\nNotes: '+qNote.value.trim():'')+'\n\nThank you.'}
+  function qText(){var n=0, L=qGroups(qIds()).map(function(G){var r=rangeBy[G.k]||{en:'Other'}; return (SHORT[G.k]||r.en).toUpperCase()+'\n'+G.ids.map(function(id){var p=byId[id], s=p.specs; n++; return n+'. '+p.n.en+(s.brand?' ('+s.brand.en+')':'')+(s.code?' · Item '+s.code.en:'')+(packOf(p)?' · '+packOf(p):'')+' · Qty '+QUOTE[id]}).join('\n')});
+    return 'Hello SFS, please quote the following items:\n\n'+L.join('\n\n')+(qNote.value.trim()?'\n\nNotes: '+qNote.value.trim():'')+'\n\nThank you.'}
   function syncQ(){var n=qIds().length;
     $$('[data-qn]').forEach(function(e){e.textContent=n}); qbar.hidden=!n||!qd.hidden; document.body.classList.toggle('has-q',!!n);
     $('#qMail').href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Quote request — '+n+(n===1?' item':' items'))+'&body='+encodeURIComponent(qText());
     $('#qWa').href=WA+'?text='+encodeURIComponent(qText());
     if(!qd.hidden) drawQ(); if(shown) syncSheetAdd();
   }
+  function qGroups(ids){var m={}, out=[]; ids.forEach(function(id){var p=byId[id]; if(!p) return; (m[p.k]=m[p.k]||[]).push(id)}); RANGES.forEach(function(r){if(m[r.key]){out.push({k:r.key,ids:m[r.key]}); delete m[r.key]}}); Object.keys(m).forEach(function(k){out.push({k:k,ids:m[k]})}); return out}
   function drawQ(){var ids=qIds();
     $('#qdFoot').hidden=!ids.length;
-    qdBody.innerHTML=ids.length?'<ul class="ql">'+ids.map(function(id){var p=byId[id], s=p.specs;
+    var QG=qGroups(ids);
+    qdBody.innerHTML=ids.length?QG.map(function(G){var r=rangeBy[G.k]||{en:'Other',ar:''}; return '<section class="ql-sec"><h3 class="ql-g">'+cIcon(G.k)+'<span>'+esc(SHORT[G.k]||r.en)+'</span>'+(r.ar?ar('span',r.ar,'ql-gar'):'')+'<i>'+G.ids.length+'</i></h3><ul class="ql">'+G.ids.map(function(id){var p=byId[id], s=p.specs;
       return '<li><span class="ql-t"><a href="#'+id+'">'+esc(p.n.en)+'</a>'+ar('span',p.n.ar,'ql-ar')+'<small>'+esc([s.brand&&s.brand.en,s.code&&('Item '+s.code.en),packOf(p)].filter(Boolean).join(' · '))+'</small></span>'
         +'<span class="ql-q" role="group" aria-label="Quantity for '+esc(p.n.en)+'"><button type="button" data-qd="'+id+'" aria-label="Decrease">−</button><input type="number" inputmode="numeric" min="1" value="'+QUOTE[id]+'" data-qi="'+id+'" aria-label="Quantity"><button type="button" data-qu="'+id+'" aria-label="Increase">+</button></span>'
-        +'<button type="button" class="ql-x" data-qr="'+id+'" aria-label="Remove '+esc(p.n.en)+'">'+'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'+'</button></li>'}).join('')+'</ul>'
+        +'<button type="button" class="ql-x" data-qr="'+id+'" aria-label="Remove '+esc(p.n.en)+'">'+'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'+'</button></li>'}).join('')+'</ul></section>'}).join('')
       :'<div class="ql-empty"><h3>Your quote list is empty.</h3><p>Use the + on any product to add it, then send the whole list in one request.</p></div>';
   }
   function openQ(){qLast=document.activeElement; drawQ(); qd.hidden=false; qbar.hidden=true; outside.concat([sheet]).forEach(function(el){el.inert=true}); document.documentElement.style.overflow='hidden'; $('.qd-x',qd).focus()}
@@ -2597,5 +2647,39 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
 <script>(function(){var b=document.getElementById('boot'); if(!b) return; var MIN=3000, t0=window.__bootT||Date.now(), gone=false;
   function go(){if(gone) return; gone=true; var wait=Math.max(0,MIN-(Date.now()-t0)); setTimeout(function(){b.classList.add('done'); setTimeout(function(){b.remove()},500)},wait)}
   if(document.readyState==='complete') go(); else {addEventListener('load',go); setTimeout(go,9000)}})();</script>
+
+<script>
+(function(){var L={qWa:'Send by WhatsApp',qCopy:'Copy list',qlClear:'Clear list'};
+  Object.keys(L).forEach(function(id){var b=document.getElementById(id); if(!b) return; b.title=L[id];
+    function st(){b.dataset.st=b.textContent.trim()} st(); new MutationObserver(st).observe(b,{childList:true,characterData:true,subtree:true})});
+  var n=document.getElementById('qNote'); if(n&&matchMedia('(max-width:719px)').matches){n.rows=1; n.placeholder='Outlet, city, delivery date (optional)'}
+})();
+</script>
+
+<script>
+(function(){
+  var car=document.getElementById('bcar'), tr=document.getElementById('btrack'); if(!car||!tr) return;
+  var sec=car.closest('section')||car.parentElement;
+  ['l','r'].forEach(function(s){var f=document.createElement('span'); f.className='bfade '+s; f.setAttribute('aria-hidden','true'); car.parentElement.appendChild(f)});
+  function place(){var c=car.getBoundingClientRect(), w=car.parentElement.getBoundingClientRect(), bg=getComputedStyle(sec).backgroundColor;
+    car.parentElement.querySelectorAll('.bfade').forEach(function(f){f.style.top=(c.top-w.top)+'px'; f.style.bottom='auto'; f.style.height=c.height+'px'; if(f.classList.contains('l')) f.style.left=(c.left-w.left)+'px'; else {f.style.right=(w.right-c.right)+'px'} f.style.setProperty('--bfc',bg&&bg!=='rgba(0, 0, 0, 0)'?bg:getComputedStyle(document.body).backgroundColor); f.style.display=car.hidden?'none':''})}
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){place(); return}
+  var SPEED=60, rate=1, pos=0, last=0, on=false, seen=true, raf=0;
+  function half(){var a=tr.children[0]; return a?a.getBoundingClientRect().width:0}
+  function step(ts){raf=0; if(!on) return; var dt=last?Math.min(64,ts-last):16; last=ts; var h=half();
+    if(h>0&&!car.hidden){pos+=SPEED*rate*dt/1000; if(pos>=h) pos-=h; car.scrollLeft=pos}
+    raf=requestAnimationFrame(step)}
+  function run(){var should=seen&&!document.hidden&&!car.hidden&&!car.querySelector(':focus-visible'); if(should&&!on){on=true; last=0; pos=car.scrollLeft; raf=requestAnimationFrame(step)} else if(!should&&on){on=false; if(raf) cancelAnimationFrame(raf)}}
+  car.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse') rate=.25});
+  car.addEventListener('pointerleave',function(){rate=1});
+  car.addEventListener('focusin',run); car.addEventListener('focusout',function(){setTimeout(run,0)});
+  document.addEventListener('visibilitychange',run);
+  if(window.IntersectionObserver) new IntersectionObserver(function(en){seen=en[0].isIntersecting; run()},{rootMargin:'200px'}).observe(car);
+  new MutationObserver(function(){place(); run()}).observe(car,{attributes:true,attributeFilter:['hidden']});
+  new MutationObserver(place).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
+  addEventListener('resize',place); addEventListener('load',function(){place(); run()});
+  place(); run(); setTimeout(function(){place(); run()},600);
+})();
+</script>
 </body>
 </html>
