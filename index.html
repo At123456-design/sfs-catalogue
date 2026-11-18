@@ -5,7 +5,7 @@
 <script>(function(){var m="system";try{m=localStorage.getItem("sfs-theme")||"system"}catch(e){} var d=m==="dark"||(m==="system"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches); document.documentElement.setAttribute("data-theme",d?"dark":"light"); document.documentElement.setAttribute("data-theme-mode",m)})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2F6C2D" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#232326" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#232326" media="(prefers-color-scheme: dark)">
 <title>MRSA</title>
 <meta name="application-name" content="MRSA"><meta name="apple-mobile-web-app-title" content="MRSA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1723,14 +1723,15 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
   #qd #qNote:focus,#qd #qNote:not(:placeholder-shown){height:84px;overflow:auto}
   #qd .qd-acts{display:flex!important;align-items:center;gap:8px}
   #qd #qMail{flex:1 1 auto;min-width:0;min-height:44px}
-  #qd #qWa,#qd #qCopy,#qd #qlClear{flex:none;width:44px;min-width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%;font-size:0!important;line-height:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line)!important;color:var(--ink)!important;background:var(--surface)}
-  #qd #qWa::before,#qd #qCopy::before,#qd #qlClear::before{content:"";width:22px;height:22px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
+  #qd #qWa,#qd #qCopy,#qd #qlClear{flex:none;width:44px;min-width:44px;height:44px;min-height:44px;padding:0!important;border-radius:50%;font-size:0!important;line-height:0;display:inline-flex;align-items:center;justify-content:center;gap:0!important;letter-spacing:0!important;text-indent:0;border:1px solid var(--line)!important;color:var(--ink)!important;background:var(--surface);position:relative}
+  #qd #qWa::before,#qd #qCopy::before,#qd #qlClear::before{content:"";position:absolute;left:50%;top:50%;margin:-11px 0 0 -11px;width:22px;height:22px;background:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat}
   #qd #qWa{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3.5 20.5 5 16a8.5 8.5 0 1 1 3.2 3.1z%22/%3E%3Cpath d=%22M9 9.5c0 3 2.5 5.5 5.5 5.5%22/%3E%3C/svg%3E")}
   #qd #qCopy{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect width=%2214%22 height=%2214%22 x=%228%22 y=%228%22 rx=%222%22 ry=%222%22/%3E%3Cpath d=%22M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2%22/%3E%3C/svg%3E")}
   #qd #qCopy[data-st="Copied"]{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M5 12.5l4.500 4.500L19 7.500%22/%3E%3C/svg%3E");color:var(--deep)!important;border-color:var(--deep)!important}
   #qd #qlClear{--ic:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10 11v6%22/%3E%3Cpath d=%22M14 11v6%22/%3E%3Cpath d=%22M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6%22/%3E%3Cpath d=%22M3 6h18%22/%3E%3Cpath d=%22M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2%22/%3E%3C/svg%3E")}
   #qd #qlClear[data-arm]{width:auto;padding:0 14px!important;border-radius:999px;font-size:var(--fs-2,13px)!important;line-height:1;gap:6px;color:var(--error,#B3261E)!important;border-color:currentColor!important;white-space:nowrap}
-  #qd #qlClear[data-arm]::before{width:18px;height:18px}
+  #qd #qlClear[data-arm]{gap:6px!important}
+  #qd #qlClear[data-arm]::before{position:static;margin:0;width:18px;height:18px;flex:none}
   #qd .qd-fine{display:none}
   #qd .ql li{padding-top:10px!important;padding-bottom:10px!important}
 }
@@ -1752,6 +1753,12 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
   .sheet{padding-top:max(env(safe-area-inset-top),14px)!important}
   .sheet .sheet-panel{border-radius:16px 16px 0 0!important;overflow:hidden}
   .fpop.sheet-mode .fp-panel{top:calc(var(--vvt) + max(env(safe-area-inset-top),14px))!important;border-radius:16px 16px 0 0!important}
+}
+
+/* ---------- phone: the browser's top bar takes its colour from the element pinned at the top edge, so the header states its own solid colour there (the same surface as the bar behind it). Status bar and header then match ---------- */
+@media (max-width:1023px){
+  html:not(.ov-lock) #header.header{background-color:var(--surface)!important}
+  html:not(.ov-lock){background-color:var(--surface)}
 }
 </style>
 </head>
@@ -2687,6 +2694,15 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
   new MutationObserver(place).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
   addEventListener('resize',place); addEventListener('load',function(){place(); run()});
   place(); run(); setTimeout(function(){place(); run()},600);
+})();
+</script>
+
+<script>
+(function(){ /* keep the browser bar colour in step with the chosen appearance, not only the device setting */
+  function set(){if(document.documentElement.classList.contains('ov-lock')) return; var c=getComputedStyle(document.documentElement).getPropertyValue('--surface').trim(); if(!c) return;
+    [].forEach.call(document.querySelectorAll('meta[name="theme-color"]'),function(m){if(m.getAttribute('content')!==c) m.setAttribute('content',c)})}
+  new MutationObserver(function(){setTimeout(set,0)}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','class']});
+  set();
 })();
 </script>
 </body>
