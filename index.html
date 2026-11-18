@@ -1803,6 +1803,14 @@ html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :fo
   .fpop.sheet-mode .fp-panel,#sheet.sheet .sheet-panel{box-shadow:none!important}
   html[data-theme="dark"] .fpop.sheet-mode .fp-back,html[data-theme="dark"] #sheet.sheet .sheet-backdrop{background:linear-gradient(to bottom,transparent 0,transparent var(--head-h,48px),rgba(0,0,0,.6) var(--head-h,48px))!important}
 }
+
+/* ---------- desktop: pulling the page past its top (the elastic bounce in Edge and on trackpads) moved the content down under the fixed side list, and the list's clip cut its top off, which looked like a white box. The clip now only trims the bottom, and the page does not bounce ---------- */
+@media (min-width:1024px){
+  .side-cell{clip-path:inset(-100vh -24px 0 -24px)!important}
+}
+@media (min-width:720px){
+  html,body{overscroll-behavior-y:none}
+}
 </style>
 </head>
 <body>
