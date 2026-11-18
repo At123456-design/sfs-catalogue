@@ -2760,7 +2760,7 @@ html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :fo
   addEventListener('resize',ic); label(); ic(); setTimeout(ic,300);
 })();
 </script>
-<script>(function(){var b=document.getElementById('boot'); if(!b) return; var MIN=3000, t0=window.__bootT||Date.now(), gone=false;
+<script>(function(){var b=document.getElementById('boot'); if(!b) return; var MIN=5000, t0=window.__bootT||Date.now(), gone=false;
   function go(){if(gone) return; gone=true; var wait=Math.max(0,MIN-(Date.now()-t0)); setTimeout(function(){b.classList.add('done'); setTimeout(function(){b.remove()},500)},wait)}
   if(document.readyState==='complete') go(); else {addEventListener('load',go); setTimeout(go,9000)}})();</script>
 
