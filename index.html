@@ -1745,6 +1745,14 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
 .bfade.r{right:var(--gut,0);background:linear-gradient(270deg,var(--bfc,var(--tint)),transparent)}
 #bcar[hidden]~.bfade,#bcar[hidden]+*+.bfade{display:none}
 @media (prefers-reduced-motion:reduce){#bcar{overflow-x:auto!important}.bfade{display:none}}
+
+/* ---------- phone sheets: the strip that tints the browser's top bar is shorter than the gap above the sheet, so it can never cover the sheet's rounded top corners ---------- */
+#topTint{height:6px!important}
+@media (max-width:719px){
+  .sheet{padding-top:max(env(safe-area-inset-top),14px)!important}
+  .sheet .sheet-panel{border-radius:16px 16px 0 0!important;overflow:hidden}
+  .fpop.sheet-mode .fp-panel{top:calc(var(--vvt) + max(env(safe-area-inset-top),14px))!important;border-radius:16px 16px 0 0!important}
+}
 </style>
 </head>
 <body>
