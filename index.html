@@ -1779,6 +1779,15 @@ body.cb-mob #cbar.s-open .cb-s{margin-inline:0!important}
   .fpop.sheet-mode .fp-panel{top:max(env(safe-area-inset-top),14px)!important;padding-bottom:calc(var(--vvf) + 140px)!important}
   .fpop.sheet-mode .fp-body{padding-bottom:calc(var(--vvb) - var(--vvf))}
 }
+
+/* ---------- typing in a sheet on a phone: the sheet stays anchored to the top of what is visible (header always on screen), and its body has room to scroll any field above the keyboard straight away ---------- */
+.qd{top:var(--vvt)!important}
+@media (max-width:719px){
+  .fpop.sheet-mode .fp-panel{top:calc(var(--vvt) + max(env(safe-area-inset-top),14px))!important}
+}
+html.kb-typing .qd .qd-body{padding-bottom:max(calc(16px + var(--vvb) - var(--vvf)),46vh)}
+html.kb-typing .fpop.sheet-mode .fp-body{padding-bottom:max(calc(var(--vvb) - var(--vvf)),46vh)}
+html.kb-typing:has(.qd-foot :focus) .qd .qd-body,html.kb-typing:has(.fp-foot :focus) .fpop.sheet-mode .fp-body{padding-bottom:16px}
 </style>
 </head>
 <body>
@@ -2470,7 +2479,8 @@ body.cb-mob #cbar.s-open .cb-s{margin-inline:0!important}
     var a=document.activeElement, typing=!!(a&&a!==document.body&&(a.tagName==='TEXTAREA'||a.isContentEditable||(a.tagName==='INPUT'&&!/^(checkbox|radio|button|submit|file|range|color)$/i.test(a.type))));
     var h=vv?vv.height:innerHeight, top=vv?vv.offsetTop:0, b=Math.max(0,innerHeight-h-top);
     /* the keyboard only exists while a text field has focus: outside that, stale viewport numbers (iOS keeps them after the keyboard closes) are ignored */
-    if(!typing||b<80||b>innerHeight*0.7){b=0; top=0}
+    if(!typing){b=0; top=0} else if(b<80||b>innerHeight*0.7) b=0;
+    R.classList.toggle('kb-typing',typing&&matchMedia('(hover:none),(pointer:coarse)').matches);
     var foot=!!(typing&&b&&a.closest&&a.closest('.qd-foot,.fp-foot'));
     var v=[top+'px',h+'px',b+'px',foot?b+'px':'0px'];
     if(vvSync.last!==v.join()){vvSync.last=v.join(); R.style.setProperty('--vvt',v[0]); R.style.setProperty('--vvh',v[1]); R.style.setProperty('--vvb',v[2]); R.style.setProperty('--vvf',v[3])}
@@ -2481,9 +2491,12 @@ body.cb-mob #cbar.s-open .cb-s{margin-inline:0!important}
   document.addEventListener('focusin',vvSoon); document.addEventListener('focusout',vvSoon); vvSync();
   /* a focused field inside a sheet is brought above the keyboard by scrolling the sheet's own body */
   document.addEventListener('focusin',function(e){var f=e.target; if(!f||!f.closest||!f.closest('#qd,#ai,#fpop')||!/^(INPUT|TEXTAREA)$/.test(f.tagName)) return;
-    setTimeout(function(){var sc=f.closest('.qd-body,.fp-body'); if(!sc||document.activeElement!==f) return; var kb=parseFloat(getComputedStyle(R).getPropertyValue('--vvb'))||0; if(!kb) return;
-      var s=sc.getBoundingClientRect(), r=f.getBoundingClientRect(), visBottom=Math.min(s.bottom,innerHeight-kb)-12, visTop=s.top+12;
-      if(r.bottom>visBottom) sc.scrollTop+=r.bottom-visBottom+24; else if(r.top<visTop) sc.scrollTop-=visTop-r.top+24},420)});
+    var sc=f.closest('.qd-body,.fp-body'); if(!sc) return; var touch=matchMedia('(hover:none),(pointer:coarse)').matches;
+    function place(first){if(document.activeElement!==f) return; var kb=parseFloat(getComputedStyle(R).getPropertyValue('--vvb'))||0, vt=parseFloat(getComputedStyle(R).getPropertyValue('--vvt'))||0;
+      if(!kb&&!(first&&touch)) return; var s=sc.getBoundingClientRect(), r=f.getBoundingClientRect();
+      var visBottom=(kb?Math.min(s.bottom,innerHeight-kb):Math.min(s.bottom,vt+innerHeight*0.46))-16, visTop=s.top+12, lab=f.closest('label,.af-row,.fld')||f, lt=Math.min(r.top,lab.getBoundingClientRect().top);
+      if(r.bottom>visBottom) sc.scrollTop+=r.bottom-visBottom+8; else if(lt<visTop) sc.scrollTop-=visTop-lt+8}
+    if(touch){R.classList.add('kb-typing'); place(true)} [120,420,800].forEach(function(ms){setTimeout(function(){place(false)},ms)})});
   var Y=0, locked=false, ids=['qd','ai','fpop','sheet'];
   function isOpen(){return ids.some(function(i){var e=document.getElementById(i);if(i==='sheet') return !!(e&&e.classList.contains('open')&&matchMedia('(max-width:719px)').matches); return e&&!e.hidden&&!e.classList.contains('closing')&&(i!=='fpop'||e.classList.contains('sheet-mode'))})}
   function sync(){
