@@ -1760,6 +1760,14 @@ body.cb-mob #cbar.s-open .cb-s~*:not(#cbT):last-child{margin-inline-end:0!import
   html:not(.ov-lock) #header.header{background-color:var(--surface)!important}
   html:not(.ov-lock){background-color:var(--surface)}
 }
+
+/* ---------- phone toolbar: the icon buttons sit at the right (owner, 18 Nov), all in the same ink; search still grows from the left edge and pushes them off to the right ---------- */
+body.cb-mob #cbar .cb-in{justify-content:flex-end!important}
+body.cb-mob #cbar .cb-in>*{margin-inline-start:0!important}
+body.cb-mob #cbar .cb-in>:last-child{margin-inline-end:-11px!important}
+body.cb-mob #cbar .cb-in>svg,body.cb-mob #cbar .cb-ic>svg,body.cb-mob #cbar .cfb>svg,body.cb-mob #cbar .cb-sort>svg,body.cb-mob #cbar .cb-add>svg{color:var(--ink)!important}
+body.cb-mob #cbar .cb-ic,body.cb-mob #cbar .cfb,body.cb-mob #cbar .cb-sort,body.cb-mob #cbar .cb-add{color:var(--ink)!important}
+body.cb-mob #cbar.s-open .cb-s{margin-inline:0!important}
 </style>
 </head>
 <body>
