@@ -46,7 +46,7 @@ body{margin:0}
 .add.jon::before{animation:pmFill .36s cubic-bezier(.32,.72,0,1) both}.add.jon::after{animation:pmRing .5s ease-out both}
 .add.joff .pm .l1{animation:pmA2 .28s cubic-bezier(.32,.72,0,1) both}.add.joff .pm .l2{animation:pmB2 .28s cubic-bezier(.32,.72,0,1) both}.add.joff::before{animation:pmOut .28s ease-out both}
 .btn.jon{animation:pmOut .36s cubic-bezier(.32,.72,0,1) both}
-.hd{background:var(--sf);border-bottom:1px solid var(--line)}
+.hd{background:var(--sf);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;box-shadow:0 6px 16px rgba(0,0,0,.06)}
 .hr{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-block:8px}
 .lg{background:none;border:0;padding:0;min-height:44px;display:inline-flex;align-items:center;margin-inline-end:12px}
 .sr{flex:1 1 280px;min-width:0;max-width:560px;margin-inline-end:auto;display:flex;align-items:center;gap:8px;height:44px;padding-inline:16px;border:1px solid var(--edge);border-radius:10px;background:var(--sf);color:var(--mu)}
@@ -108,9 +108,9 @@ body{margin:0}
 .emp{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:48px 16px;color:var(--mu)}
 .emp h2{font-size:20px;color:var(--ink)}
 .ctr{display:flex;justify-content:center;margin-top:24px}
-.ovl{position:fixed;inset:0;z-index:50;display:flex;background:rgba(0,0,0,.4);animation:fade .2s both}
-.scrim{flex:1 1 auto;background:none;border:0;padding:0;min-width:0}
-.sheet{background:var(--sf);display:flex;flex-direction:column;height:100%;animation:slide .32s cubic-bezier(.32,.72,0,1) both}
+.ovl{position:fixed;left:0;right:0;top:0;height:calc(100dvh + 140px);z-index:50;display:flex;animation:fade .2s both}
+.scrim{flex:1 1 auto;background:rgba(0,0,0,.32);border:0;padding:0;min-width:0}.app.dark .scrim{background:rgba(0,0,0,.6)}@media (prefers-color-scheme:dark){.app.auto .scrim{background:rgba(0,0,0,.6)}}
+.sheet{background:var(--sf);display:flex;flex-direction:column;height:100%;box-sizing:border-box;padding-bottom:140px;box-shadow:0 0 60px rgba(0,0,0,.18);animation:slide .32s cubic-bezier(.32,.72,0,1) both}
 .dw{width:min(320px,86vw)}.fp{width:min(420px,100vw)}
 .sh{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .st{font-size:20px;font-weight:700}
